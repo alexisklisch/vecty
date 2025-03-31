@@ -1,0 +1,20 @@
+{
+  "name": "vecty",
+  "version": "0.0.1",
+  "description": "Add variables to SVG files.",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "test": "node test/index.js"
+  },
+  "keywords": [],
+  "author": "Alexis Fleitas Klisch",
+  "license": "MIT",
+  "devDependencies": {
+    "fast-xml-parser": "5.0.9",
+    "tsc-alias": "1.8.13",
+    "tsx": "4.19.3",
+    "typescript": "5.8.2"
+  },
+  "packageManager": "pnpm@10.7.0"
+}
