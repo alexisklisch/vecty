@@ -5,16 +5,18 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "tsx src/index.ts",
-    "test": "tsx src/test.ts"
+    "test": "vitest",
+    "temp": "tsx src/temp.ts"
   },
   "keywords": [],
   "author": "Alexis Fleitas Klisch",
   "license": "MIT",
   "devDependencies": {
-    "fast-xml-parser": "5.0.9",
+    "@types/node": "22.13.17",
     "tsc-alias": "1.8.13",
     "tsx": "4.19.3",
-    "typescript": "5.8.2"
+    "typescript": "5.8.2",
+    "vitest": "3.1.1"
   },
   "packageManager": "pnpm@10.7.0"
 }
