@@ -1,5 +1,5 @@
-import { evaluateExpression } from "./utils/evaluateExpression"
-import { SimpleXMLParser } from "./utils/xmlParser"
+import { evaluateExpression } from "@/utils/evaluateExpression"
+import { SimpleXMLParser } from "@/utils/xmlParser/xmlParser"
 
 export interface VectyConfig {
   variables?: Record<string, any>
@@ -64,7 +64,7 @@ class Vecty {
 
     this.#recursiveSVG(svgParsed, undefined, undefined)
 
-    return svgParsed
+    return [svgParsed]
   }
 
 
@@ -79,6 +79,10 @@ class Vecty {
           for (const [attrName, attrValue] of Object.entries(elementAttrs)) {
             if (attrValue.expression) {
               console.log(`Tenemos el elemento ${currentNode.tag} con el atributo ${attrName} del valor ${JSON.stringify(attrValue.expression)}`)
+              const result = evaluateExpression(attrValue.expression, this.variables)
+              typeof result === 'object'
+                ? currentNode.attr[attrName] = JSON.stringify(JSON.stringify(result)).slice(1, -1)
+                : currentNode.attr[attrName] = String(result)
             }
           }
 

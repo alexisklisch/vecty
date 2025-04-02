@@ -1,6 +1,6 @@
 console.time('testix')
 import Vecty from '@/index'
-import { XMLBuilder } from './utils/xmlBuilder'
+import { XMLBuilder } from './utils/xmlParser/xmlBuilder'
 
 const svg = `
 <svg standar="4,3,2,1" calidad="243">
@@ -42,6 +42,6 @@ const vecty = new Vecty(svg, {
 console.log(JSON.stringify([vecty.svg], null, 2))
 
 const builder = new XMLBuilder()
-const svgx = builder.build([vecty.svg])
+const svgx = builder.build(vecty.svg)
 console.log(svgx)
 console.timeEnd('testix')

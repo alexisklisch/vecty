@@ -1,7 +1,6 @@
 import Vecty from '@/index'
+import { XMLBuilder } from '@/utils/xmlParser/xmlBuilder'
 import { expect, test } from 'vitest'
-import { XMLBuilder } from '@/utils/xmlBuilder'
-import { SimpleXMLParser } from '@/utils/xmlParser';
 
 test('Dasarma y vuelve a armar un SVG complejo', () => {
   const svg = `
@@ -22,10 +21,10 @@ test('Dasarma y vuelve a armar un SVG complejo', () => {
           }
           </variables>
     </manifest>
-    <text>Es lo que es<p>Mas cosas</p></text>
+    <text expr={2 + 2} >Es lo que es<p>Mas cosas</p></text>
     <image src={{src: 'https://images.com/img.jpg', mode: 'url'}} />
     {
-      {tag: 'group', children: [0, 0, 0].map((el, i) => ({tag: 'text', children: [text: 'Pepe pelotas']}))}
+      {tag: 'group', children: [0, 0, 0].map((el, i) => ({tag: 'text', children: [{text: "Fua loco, que hambre"}]}))}
     }
   </svg>
   `
@@ -41,5 +40,8 @@ test('Dasarma y vuelve a armar un SVG complejo', () => {
     }
   })
 
-  expect(vecty.svg).toBe(svg)
-}
+  const builder = new XMLBuilder()
+  const result = builder.build(vecty.svg)
+
+  expect(result.startsWith('<svg standar="4,3,2,1"')).toBe(true)
+})

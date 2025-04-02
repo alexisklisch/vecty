@@ -1,19 +1,4 @@
-type Node = TextNode | ElementNode
-
-export interface TextNode {
-  text?: string
-  expression?: string
-}
-
-export interface ElementNode {
-  tag: string
-  attr: { [key: string]: string | Expression }
-  children: Node[]
-}
-
-interface Expression {
-  expression: string
-}
+import type { ElementNode, Expression, Node } from '@/utils/xmlParser/commonTypes'
 
 export class SimpleXMLParser {
   private pos = 0

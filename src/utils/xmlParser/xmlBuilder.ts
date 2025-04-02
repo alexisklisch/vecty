@@ -1,19 +1,4 @@
-type Node = TextNode | ElementNode;
-
-interface TextNode {
-  text?: string;
-  expression?: string;
-}
-
-interface ElementNode {
-  tag: string;
-  attr: { [key: string]: string | Expression };
-  children: Node[];
-}
-
-interface Expression {
-  expression: string;
-}
+import type { ElementNode, Expression, Node } from '@/utils/xmlParser/commonTypes'
 
 export class XMLBuilder {
   /**
@@ -28,7 +13,7 @@ export class XMLBuilder {
    */
   private buildNode(node: Node): string {
     if ('tag' in node) {
-      return this.buildElement(node as ElementNode);
+      return this.buildElement(node as unknown as ElementNode);
     } else if ('text' in node) {
       return node.text!;
     } else if ('expression' in node) {
