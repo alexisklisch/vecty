@@ -39,9 +39,7 @@ const vecty = new Vecty(svg, {
   }
 })
 
-console.log(JSON.stringify([vecty.svg], null, 2))
 
 const builder = new XMLBuilder()
 const svgx = builder.build(vecty.svg)
-console.log(svgx)
 console.timeEnd('testix')

@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
-import { XMLBuilder } from '@/utils/xmlBuilder'
-import { SimpleXMLParser } from '@/utils/xmlParser';
+import { XMLBuilder } from '@/utils/xmlParser/xmlBuilder'
+import { SimpleXMLParser } from '@/utils/xmlParser/xmlParser';
 
 test('Dasarma y vuelve a armar un SVG complejo', () => {
 

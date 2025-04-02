@@ -1,64 +1,19 @@
 import { evaluateExpression } from "@/utils/evaluateExpression"
 import { SimpleXMLParser } from "@/utils/xmlParser/xmlParser"
-
-export interface VectyConfig {
-  variables?: Record<string, any>
-  fonts?: Record<string, Record<string, any>>
-}
+import type { VectyConfig } from '@/types'
+import { assignInitialVars } from "./utils/assignVariables"
+import { parser } from "./utils/xmlParser"
 
 class Vecty {
   public variables: Record<string, any> = {}
   #SVGTemp: string
 
   constructor(private readonly userSVG: string, private config: VectyConfig = {}) {
-    this.#SVGTemp = userSVG
-    // Extraer el contenido del manifest
-    const manifestContent = this.#SVGTemp.match(/<manifest vecty>([\s\S]*?)<\/manifest>/)
-    if (!!manifestContent) { // Si existe el manifest...
-      // 1. Eliminar el manifest del SVG
-      this.#SVGTemp = this.#SVGTemp.replace(/<manifest vecty>[\s\S]*?<\/manifest>/, '')
+    this.#SVGTemp = assignInitialVars(userSVG, this.variables, config)
 
-      // 2. Extraer y asignar variables del system
-      const systemVariablesContent = manifestContent[1].match(/<variables>([\s\S]*?)<\/variables>/)
-      if (!!systemVariablesContent) {
-        const systemVariables = JSON.parse(systemVariablesContent[1])
-
-        const systemVarsEntries = Object.entries(systemVariables)
-        this.variables = systemVarsEntries.reduce<Record<string, any>>((prev, [key, value]) => {
-          prev['system$$' + key] = value
-          return prev
-        }, {})
-      }
-
-      // 3. Extraer y asignar variables del manifest
-      const metadataVariablesContent = manifestContent[1].match(/<metadata>([\s\S]*?)<\/metadata>/)
-      if (!!metadataVariablesContent) {
-        const metadataVariables = JSON.parse(metadataVariablesContent[1])
-
-        const metadataVarsEntries = Object.entries(metadataVariables)
-        this.variables = {
-          ...this.variables,
-          ...metadataVarsEntries.reduce<Record<string, any>>((prev, [key, value]) => {
-            prev['metadata$$' + key] = value
-            return prev
-          }, {})
-        }
-      }
-    }
-
-    // Asignar variables del usuario
-    const { variables } = config
-    const userVarsEntries = Object.entries(variables!)
-    this.variables = {
-      ...this.variables,
-      ...userVarsEntries.reduce<Record<string, any>>((prev, [key, value]) => {
-        prev['user$$' + key] = value
-        return prev
-      }, {})
-    }
   }
 
-  get svg() {
+  get object() {
     const parserConstructor = new SimpleXMLParser(this.#SVGTemp)
     const [svgParsed] = parserConstructor.parse()
 
@@ -66,6 +21,8 @@ class Vecty {
 
     return [svgParsed]
   }
+
+  get svg() { return parser.build(this.object) }
 
 
   #recursiveSVG(currentNode: Record<string, any>, parent?: Record<string, any>, currentPosition?: number) {
