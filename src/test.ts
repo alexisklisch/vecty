@@ -1,10 +1,27 @@
-console.time('cosa')
-import { parser } from "./utils/xmlParser";
-const xmlPrueba = '<xml><header>Ésta es la cuestion:</header><a href={Cuestiones de la vida}>Funcionará?</a></xml>'
-const parseado = parser.parse(xmlPrueba)
-const fixedInput = xmlPrueba.replace(/(\w+)=\{([^}]+)\}/g, '$1="{$2}"')
-const parseadoDos = parser.parse(fixedInput)
+import { SimpleXMLParser } from '@/utils/xmlParser'
+import { evaluateExpression } from './utils/evaluateExpression';
+// Ejemplo de uso
+const xmlInput = `
+<svg>
+  <circle x="16" y="32" r="6" fill="blue"/>
+  {
+    Array.from({length:5}).map((el, i) => {
+      if (system$$age <= 16) return \`Espectacular \${el * i}\`
+      else return "Mal ahí"
+    })
+  }
+  <metadata>
+    {{
+      user: 'Alexander Macalla'
+    }}
+  </metadata>
+  <image vecty:new src={{src: $USER.profileUrl, mode: 'base64'}} />
+</svg>
+`
 
-console.log('PRIMERO MAL -> ', JSON.stringify(parseado))
-console.log('SEGUNDO BIEN -> ', JSON.stringify(parseadoDos))
-console.timeEnd('cosa')
+
+const parser = new SimpleXMLParser(xmlInput)
+const parsedOutput = parser.parse()
+
+console.log(JSON.stringify(parsedOutput[0].children![1].expression))
+console.log(evaluateExpression(parsedOutput[0].children![1].expression, { Array }))
