@@ -1,1 +1,613 @@
-console.log('Bienvenido a Vecty')
+import { evaluateExpression } from "./utils/evaluateExpression"
+import { SimpleXMLParser } from "./utils/xmlParser"
+
+export interface VectyConfig {
+  variables?: Record<string, any>
+  fonts?: Record<string, Record<string, any>>
+}
+
+class Vecty {
+  public variables: Record<string, any> = {}
+  #SVGTemp: string
+
+  constructor(private readonly userSVG: string, private config: VectyConfig = {}) {
+    this.#SVGTemp = userSVG
+    // Extraer el contenido del manifest
+    const manifestContent = this.#SVGTemp.match(/<manifest vecty>([\s\S]*?)<\/manifest>/)
+    if (!!manifestContent) { // Si existe el manifest...
+      // 1. Eliminar el manifest del SVG
+      this.#SVGTemp = this.#SVGTemp.replace(/<manifest vecty>[\s\S]*?<\/manifest>/, '')
+
+      // 2. Extraer y asignar variables del system
+      const systemVariablesContent = manifestContent[1].match(/<variables>([\s\S]*?)<\/variables>/)
+      if (!!systemVariablesContent) {
+        const systemVariables = JSON.parse(systemVariablesContent[1])
+
+        const systemVarsEntries = Object.entries(systemVariables)
+        this.variables = systemVarsEntries.reduce<Record<string, any>>((prev, [key, value]) => {
+          prev['system$$' + key] = value
+          return prev
+        }, {})
+      }
+
+      // 3. Extraer y asignar variables del manifest
+      const metadataVariablesContent = manifestContent[1].match(/<metadata>([\s\S]*?)<\/metadata>/)
+      if (!!metadataVariablesContent) {
+        const metadataVariables = JSON.parse(metadataVariablesContent[1])
+
+        const metadataVarsEntries = Object.entries(metadataVariables)
+        this.variables = {
+          ...this.variables,
+          ...metadataVarsEntries.reduce<Record<string, any>>((prev, [key, value]) => {
+            prev['metadata$$' + key] = value
+            return prev
+          }, {})
+        }
+      }
+    }
+
+    // Asignar variables del usuario
+    const { variables } = config
+    const userVarsEntries = Object.entries(variables!)
+    this.variables = {
+      ...this.variables,
+      ...userVarsEntries.reduce<Record<string, any>>((prev, [key, value]) => {
+        prev['user$$' + key] = value
+        return prev
+      }, {})
+    }
+  }
+
+  get svg() {
+    const parserConstructor = new SimpleXMLParser(this.#SVGTemp)
+    const [svgParsed] = parserConstructor.parse()
+
+    this.#recursiveSVG(svgParsed, undefined, undefined)
+
+    return svgParsed
+  }
+
+
+  #recursiveSVG(currentNode: Record<string, any>, parent?: Record<string, any>, currentPosition?: number) {
+    if (typeof currentNode === 'object') {
+
+
+      if (currentNode.children) {
+        const elementAttrs: Record<string, any> = currentNode?.attr || {}
+
+        if (elementAttrs)
+          for (const [attrName, attrValue] of Object.entries(elementAttrs)) {
+            if (attrValue.expression) {
+              console.log(`Tenemos el elemento ${currentNode.tag} con el atributo ${attrName} del valor ${JSON.stringify(attrValue.expression)}`)
+            }
+          }
+
+
+        for (const [key, value] of Object.entries(currentNode.children)) {
+          this.#recursiveSVG(value as Record<string, any>, currentNode, +key)
+        }
+
+        return
+      }
+
+      if (currentNode.text) {
+        return
+      }
+
+      // Situación, es una expresión
+      if (currentNode.expression) {
+        parent!.children[currentPosition!] = evaluateExpression(currentNode.expression, this.variables)
+        return
+      }
+
+      /*
+          // Si no es un elemento tipo poster, continua
+          if (!key.startsWith('poster-')) {
+            await this.#recursiveSVG(value, node, key)
+            continue
+          }
+  
+          // ACA
+          const nativeAttrs = Object.fromEntries(Object.entries(elementAttrs).filter(([key]) => !key.includes('poster:')))
+  
+          const conditionAttr = elementAttrs['poster:condition']
+          if (!!conditionAttr && !this.#processedNodes.has(node)) {
+            this.#processedNodes.add(node) // Marcar el nodo como procesado
+            const result = !!evaluateCondition(conditionAttr, this.vars)
+  
+            if (!result) {
+              parent[keyInParent] = []
+              continue
+            }
+  
+            // Crear una copia de elementAttrs sin 'poster:condition'
+            node[':@'] = Object.fromEntries(
+              Object.entries(elementAttrs).filter(([key]) => key !== 'poster:condition')
+            )
+          }
+  
+          if (key === 'poster-textbox') {
+            // Estableciendo variables
+            const [x, y, boxWidth, boxHeight] = (elementAttrs['poster:box-size'] || '0 0 100 100').split(' ').map(Number)
+            const boxStroke = elementAttrs['poster:box-stroke']
+            const fontSize = Number(elementAttrs['poster:font-size']) || 16
+            const textAlign = elementAttrs['poster:text-align'] || 'left'
+            const verticalAlign = elementAttrs['poster:vertical-align'] || 'top'
+            const textTransform = elementAttrs['poster:text-transform'] || 'none'
+            const lineHeight = Number(elementAttrs['poster:line-height']) || 0
+            const letterSpacing = Number(elementAttrs['letter-spacing']) || 0
+            const fontFamily = elementAttrs['poster:font-family'] || 'Arial'
+            const fontWeight = Number(elementAttrs['poster:font-weight']) || 400
+            let text = String(value[0]['#text'])
+  
+            if (text === '%undefined%') {
+              parent[keyInParent] = []
+              continue
+            }
+  
+            if (textTransform === 'none') { }
+            else if (textTransform === 'lowercase') text = text.toLowerCase()
+            else if (textTransform === 'uppercase') text = text.toUpperCase()
+  
+            // Seleccionar fuente actual
+            const selectedFont = this.fonts.find(font => font.name === fontFamily && font.weight === fontWeight)
+            if (!selectedFont) throw new Error('<poster-textbox/> debe tener al menos una fuente válida.')
+            const buffer = selectedFont.data
+            const font = parse(buffer)
+            // Utilidad para calcular siempre con la fuente seleccionada
+            const withFontWidth = text => getTextWidth(text, fontSize, font, letterSpacing)
+  
+            // Crear un array de palabras
+            const words = text.split(' ')
+            // Array con las líneas
+            const textLines = []
+            // Linea temporar
+            let tempLine = ''
+  
+            while (words.length >= 1) {
+              // selecciona y elimina la primera word[]
+              const currentWord = words.shift()
+              // Analizar nuevos espacios
+              const fullTempLineFontWidth = withFontWidth(`${tempLine} ${currentWord}`)
+              const isBiggerThanBox = fullTempLineFontWidth > boxWidth
+  
+  
+              // Si el texto es mas grande que la caja de texto...
+              if (isBiggerThanBox) {
+                // Separo en sílabas la palabra
+                let syllabes = syllabler(currentWord)
+                syllabes = restoreCapitalization(currentWord, syllabes)
+                // Utilidad para saber siempre el temaño con las sílabas actuales
+                const currentSyllabesFontWidth = () => withFontWidth(`${tempLine} ${syllabes.join('')}-`.trim())
+                // Variable donde se guarda la/s sílaba a enviar debajo
+                let nextLineSyllabes = ''
+  
+                // Mientras que la actual palabra con guión sea más grande...
+                while (currentSyllabesFontWidth() > boxWidth) {
+                  const currentSyllabe = syllabes.pop()
+                  // Si la cantidad de sílabas es igual a 0
+                  if (syllabes.length === 0) {
+                    // La sílaba de la siguiente línea es la palabra entera
+                    nextLineSyllabes = currentWord
+                    // Y detengo el ciclo while
+                    break
+                  }
+                  // Si no ocurre nada de ésto, la sílaba de la próxima línea se le suma ésta sílaba
+                  nextLineSyllabes = currentSyllabe + nextLineSyllabes
+                }
+  
+                words.unshift(nextLineSyllabes)
+                tempLine = `${tempLine} ${syllabes.join('') ? `${syllabes.join('')}-` : ''}`.trim()
+                textLines.push(tempLine)
+                tempLine = ''
+                nextLineSyllabes = ''
+  
+              } else {
+                tempLine += ` ${currentWord}`
+                // Si es la última línea, y entra en la caja, hacer push
+                if (words.length === 0) textLines.push(tempLine.trim())
+              }
+            }
+  
+  
+  
+            let currentX = x
+            let currentY = y
+            const pathData = []
+            const scale = fontSize / font.unitsPerEm
+  
+            const AllLinesSize = textLines.length * fontSize + (textLines.length - 1) * lineHeight
+            if (verticalAlign === 'middle') currentY = y + (boxHeight - AllLinesSize) / 2
+            else if (verticalAlign === 'bottom') currentY = y + boxHeight - AllLinesSize
+  
+            textLines.forEach((line, i) => {
+              if (textAlign === 'left') currentX = x
+              else if (textAlign === 'center') currentX = x + (boxWidth - withFontWidth(line)) / 2
+              else if (textAlign === 'right') currentX = x + boxWidth - withFontWidth(line)
+  
+              if (i > 0) currentY += fontSize + lineHeight
+  
+              const glyphs = font.stringToGlyphs(line)
+              for (const glyph of glyphs) {
+                const glyphWidth = glyph.advanceWidth * scale
+  
+                // Obtener el path, ajustando la altura
+                const path = glyph.getPath(currentX, currentY + fontSize, fontSize)
+                pathData.push(path.toSVG())
+                currentX += glyphWidth + letterSpacing
+              }
+  
+            })
+  
+            const path = this.parser.parse(pathData)
+  
+            const nuevo = {
+              g: path,
+              ':@': {
+                ...nativeAttrs
+              }
+            }
+  
+            // Si hay un box stroke, agregar el cuadrado
+            if (boxStroke) {
+              nuevo.g.unshift({
+                rect: [],
+                ':@': {
+                  stroke: boxStroke,
+                  fill: 'transparent',
+                  x: x,
+                  y: y,
+                  height: boxHeight,
+                  width: boxWidth
+                }
+              })
+            }
+  
+            if (parent && keyInParent) parent[keyInParent] = nuevo
+            continue
+          }
+  
+          if (key === 'poster-image') {
+            const src = elementAttrs['poster:src']
+            const [srcType, ...assetDataArray] = src.split('%')
+            const assetData = assetDataArray.join('%')
+  
+            let base64File = ''
+            if (srcType === 'assets') {
+              const imgAssetPath = join(this.designDir, 'assets', 'images', assetData)
+              base64File = await readFile(imgAssetPath, { encoding: 'base64' })
+            }
+  
+            const imgConstructor = {
+              image: [],
+              ':@': {
+                'href': `data:image/jpeg;base64,${base64File}`,
+                ...nativeAttrs
+              }
+            }
+  
+            if (parent && keyInParent) parent[keyInParent] = imgConstructor
+            continue
+          }
+  
+          if (key !== ':@') await this.#recursiveSVG(value, node, key)
+        }
+        */
+    }
+  }
+}
+
+export default Vecty
+
+/* class Vectyx {
+  constructor(svg: string, config: VectyConfig) {
+    const { variables, fonts } = config
+    // Asignar tipo de variable ******************************************************************************
+    const userVarsEntries = Object.entries(variables)*********************************************************
+    this.vars = userVarsEntries.reduce((prev, [key, value]) => {**********************************************
+      prev['user$$' + key] = value****************************************************************************
+      return prev ********************************************************************************************
+    }, {})****************************************************************************************************
+
+    this.fonts = fonts
+    // Configurar parser**************************************************************************************
+    const commonConfig = { preserveOrder: true, ignoreAttributes: false, attributeNamePrefix: '' }************
+    this.parser = new XMLParser(commonConfig)*****************************************************************
+    this.builder = new XMLBuilder(commonConfig)***************************************************************
+
+  }
+
+  async svgsFrom(designPath, { batch = false } = {}) {
+    // Establecer directorios ********************************************************************************
+    this.designDir = join(process.cwd(), designPath) *********************************************************
+    const manifestPath = join(this.designDir, 'manifest.json') //📄 ruta /manifest.json***********************
+    const templatesDir = join(this.designDir, 'templates') //📂 ruta templates/ ******************************
+
+    // Parsear el manifest************************************************************************************
+    const manifestRaw = await readFile(manifestPath, { encoding: 'utf-8' })***********************************
+    const manifest = JSON.parse(manifestRaw)******************************************************************
+    const { assets, metadata, variables } = manifest**********************************************************
+
+    // Agregar variables del manifest*************************************************************************
+    const templateVarsEntries = Object.entries(variables || {})***********************************************
+    templateVarsEntries.forEach(([key, value]) => this.vars['template$$' + key] = value)**********************
+    // Agregar variables intrínsecas a las variables**********************************************************
+    const metadataEntries = Object.entries(metadata)**********************************************************
+    metadataEntries.forEach(([key, value]) => this.vars['metadata$$' + key] = value)**************************
+
+    // Array con rutas de cada diseño
+    const templatesFileNames = await readdir(templatesDir)****************************************************
+    const templatePaths = templatesFileNames.map(file => join(templatesDir, file))****************************
+
+    const templates = []**************************************************************************************
+
+    // Aplicar variables**************************************************************************************
+    for (const templatePath of templatePaths) {***************************************************************
+      let rawTemplate = await readFile(templatePath, { encoding: 'utf-8' })***********************************
+      //const templateName = templatePath.split('/').pop().split('.').slice(0, -1).join('')*******************
+
+      // Aplicar las variables del usuario al template********************************************************
+      const templateWithVarsApplied = replaceWithVariables(rawTemplate, this.vars)****************************
+      templates.push(templateWithVarsApplied)*****************************************************************
+    }
+
+    // Parsear el SVG
+    const parsedSVGs = templates.map(tmplt => this.parser.parse(tmplt))***************************************
+
+    // Transformar los <poster-textbox>
+    for (const parsed of parsedSVGs) {
+      await this.#recursiveSVG(parsed, null, null)
+    }
+
+    // Buildear aplicando variables later()
+    const builded = parsedSVGs.map(svg => {
+      const build = this.builder.build(svg).replaceAll('&apos;', "'")
+      return replaceWithVariables(build, this.vars, true)
+    })
+
+    return builded
+
+  }
+
+  async #recursiveSVG(node, parent, keyInParent) {
+
+    if (typeof node === 'object') {
+
+      for (const [key, value] of Object.entries(node)) {
+        // Si no es un elemento tipo poster, continua
+        if (!key.startsWith('poster-')) {
+          await this.#recursiveSVG(value, node, key)
+          continue
+        }
+
+        const elementAttrs = node[':@'] || {}
+        const nativeAttrs = Object.fromEntries(Object.entries(elementAttrs).filter(([key]) => !key.includes('poster:')))
+
+        const conditionAttr = elementAttrs['poster:condition']
+        if (!!conditionAttr && !this.#processedNodes.has(node)) {
+          this.#processedNodes.add(node) // Marcar el nodo como procesado
+          const result = !!evaluateCondition(conditionAttr, this.vars)
+
+          if (!result) {
+            parent[keyInParent] = []
+            continue
+          }
+
+          // Crear una copia de elementAttrs sin 'poster:condition'
+          node[':@'] = Object.fromEntries(
+            Object.entries(elementAttrs).filter(([key]) => key !== 'poster:condition')
+          )
+        }
+
+        if (key === 'poster-textbox') {
+          // Estableciendo variables
+          const [x, y, boxWidth, boxHeight] = (elementAttrs['poster:box-size'] || '0 0 100 100').split(' ').map(Number)
+          const boxStroke = elementAttrs['poster:box-stroke']
+          const fontSize = Number(elementAttrs['poster:font-size']) || 16
+          const textAlign = elementAttrs['poster:text-align'] || 'left'
+          const verticalAlign = elementAttrs['poster:vertical-align'] || 'top'
+          const textTransform = elementAttrs['poster:text-transform'] || 'none'
+          const lineHeight = Number(elementAttrs['poster:line-height']) || 0
+          const letterSpacing = Number(elementAttrs['letter-spacing']) || 0
+          const fontFamily = elementAttrs['poster:font-family'] || 'Arial'
+          const fontWeight = Number(elementAttrs['poster:font-weight']) || 400
+          let text = String(value[0]['#text'])
+
+          if (text === '%undefined%') {
+            parent[keyInParent] = []
+            continue
+          }
+
+          if (textTransform === 'none') { }
+          else if (textTransform === 'lowercase') text = text.toLowerCase()
+          else if (textTransform === 'uppercase') text = text.toUpperCase()
+
+          // Seleccionar fuente actual
+          const selectedFont = this.fonts.find(font => font.name === fontFamily && font.weight === fontWeight)
+          if (!selectedFont) throw new Error('<poster-textbox/> debe tener al menos una fuente válida.')
+          const buffer = selectedFont.data
+          const font = parse(buffer)
+          // Utilidad para calcular siempre con la fuente seleccionada
+          const withFontWidth = text => getTextWidth(text, fontSize, font, letterSpacing)
+
+          // Crear un array de palabras
+          const words = text.split(' ')
+          // Array con las líneas
+          const textLines = []
+          // Linea temporar
+          let tempLine = ''
+
+          while (words.length >= 1) {
+            // selecciona y elimina la primera word[]
+            const currentWord = words.shift()
+            // Analizar nuevos espacios
+            const fullTempLineFontWidth = withFontWidth(`${tempLine} ${currentWord}`)
+            const isBiggerThanBox = fullTempLineFontWidth > boxWidth
+
+
+            // Si el texto es mas grande que la caja de texto...
+            if (isBiggerThanBox) {
+              // Separo en sílabas la palabra
+              let syllabes = syllabler(currentWord)
+              syllabes = restoreCapitalization(currentWord, syllabes)
+              // Utilidad para saber siempre el temaño con las sílabas actuales
+              const currentSyllabesFontWidth = () => withFontWidth(`${tempLine} ${syllabes.join('')}-`.trim())
+              // Variable donde se guarda la/s sílaba a enviar debajo
+              let nextLineSyllabes = ''
+
+              // Mientras que la actual palabra con guión sea más grande...
+              while (currentSyllabesFontWidth() > boxWidth) {
+                const currentSyllabe = syllabes.pop()
+                // Si la cantidad de sílabas es igual a 0
+                if (syllabes.length === 0) {
+                  // La sílaba de la siguiente línea es la palabra entera
+                  nextLineSyllabes = currentWord
+                  // Y detengo el ciclo while
+                  break
+                }
+                // Si no ocurre nada de ésto, la sílaba de la próxima línea se le suma ésta sílaba
+                nextLineSyllabes = currentSyllabe + nextLineSyllabes
+              }
+
+              words.unshift(nextLineSyllabes)
+              tempLine = `${tempLine} ${syllabes.join('') ? `${syllabes.join('')}-` : ''}`.trim()
+              textLines.push(tempLine)
+              tempLine = ''
+              nextLineSyllabes = ''
+
+            } else {
+              tempLine += ` ${currentWord}`
+              // Si es la última línea, y entra en la caja, hacer push
+              if (words.length === 0) textLines.push(tempLine.trim())
+            }
+          }
+
+
+
+          let currentX = x
+          let currentY = y
+          const pathData = []
+          const scale = fontSize / font.unitsPerEm
+
+          const AllLinesSize = textLines.length * fontSize + (textLines.length - 1) * lineHeight
+          if (verticalAlign === 'middle') currentY = y + (boxHeight - AllLinesSize) / 2
+          else if (verticalAlign === 'bottom') currentY = y + boxHeight - AllLinesSize
+
+          textLines.forEach((line, i) => {
+            if (textAlign === 'left') currentX = x
+            else if (textAlign === 'center') currentX = x + (boxWidth - withFontWidth(line)) / 2
+            else if (textAlign === 'right') currentX = x + boxWidth - withFontWidth(line)
+
+            if (i > 0) currentY += fontSize + lineHeight
+
+            const glyphs = font.stringToGlyphs(line)
+            for (const glyph of glyphs) {
+              const glyphWidth = glyph.advanceWidth * scale
+
+              // Obtener el path, ajustando la altura
+              const path = glyph.getPath(currentX, currentY + fontSize, fontSize)
+              pathData.push(path.toSVG())
+              currentX += glyphWidth + letterSpacing
+            }
+
+          })
+
+          const path = this.parser.parse(pathData)
+
+          const nuevo = {
+            g: path,
+            ':@': {
+              ...nativeAttrs
+            }
+          }
+
+          // Si hay un box stroke, agregar el cuadrado
+          if (boxStroke) {
+            nuevo.g.unshift({
+              rect: [],
+              ':@': {
+                stroke: boxStroke,
+                fill: 'transparent',
+                x: x,
+                y: y,
+                height: boxHeight,
+                width: boxWidth
+              }
+            })
+          }
+
+          if (parent && keyInParent) parent[keyInParent] = nuevo
+          continue
+        }
+
+        if (key === 'poster-image') {
+          const src = elementAttrs['poster:src']
+          const [srcType, ...assetDataArray] = src.split('%')
+          const assetData = assetDataArray.join('%')
+
+          let base64File = ''
+          if (srcType === 'assets') {
+            const imgAssetPath = join(this.designDir, 'assets', 'images', assetData)
+            base64File = await readFile(imgAssetPath, { encoding: 'base64' })
+          }
+
+          const imgConstructor = {
+            image: [],
+            ':@': {
+              'href': `data:image/jpeg;base64,${base64File}`,
+              ...nativeAttrs
+            }
+          }
+
+          if (parent && keyInParent) parent[keyInParent] = imgConstructor
+          continue
+        }
+
+        if (key !== ':@') await this.#recursiveSVG(value, node, key)
+      }
+
+    }
+  }
+
+}
+
+// Función externa modificada para incluir kerning
+function getTextWidth(text, fontSize, font, kerning) {
+  const scale = fontSize / font.unitsPerEm;
+  let width = 0
+  const glyphs = font.stringToGlyphs(text)
+  for (let i = 0; i < glyphs.length; i++) {
+    const glyph = glyphs[i]
+    width += glyph.advanceWidth * scale
+
+    // Si hay kerning, calcular entre pares de glifos
+    if (kerning && i < glyphs.length - 1) {
+      width += kerning
+    }
+  }
+
+  return width
+}
+
+function restoreCapitalization(originalWord, syllabes) {
+  let restored = [];
+  let charIndex = 0;
+
+  for (const syllabe of syllabes) {
+    let restoredSyllabe = '';
+
+    for (let i = 0; i < syllabe.length; i++) {
+      if (charIndex < originalWord.length && originalWord[charIndex] === originalWord[charIndex].toUpperCase()) {
+        restoredSyllabe += syllabe[i].toUpperCase();
+      } else {
+        restoredSyllabe += syllabe[i];
+      }
+      charIndex++;
+    }
+
+    restored.push(restoredSyllabe);
+  }
+
+  return restored;
+}
+ */
