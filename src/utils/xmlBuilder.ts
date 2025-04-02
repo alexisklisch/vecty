@@ -7,7 +7,7 @@ interface TextNode {
 
 interface ElementNode {
   tag: string;
-  attributes: { [key: string]: string | Expression };
+  attr: { [key: string]: string | Expression };
   children: Node[];
 }
 
@@ -43,8 +43,8 @@ export class XMLBuilder {
    */
   private buildElement(node: ElementNode): string {
     const tag = node.tag;
-    const attrs = this.buildAttributes(node.attributes);
-    const children = node.children.map((child) => this.buildNode(child)).join('');
+    const attrs = this.buildAttributes(node.attr);
+    const children = (node.children || []).map((child) => this.buildNode(child)).join('');
     if (children.length === 0) {
       return `<${tag}${attrs}/>`;
     } else {
@@ -57,7 +57,7 @@ export class XMLBuilder {
    * el mismo formato original.
    */
   private buildAttributes(attrs: { [key: string]: string | Expression }): string {
-    const keys = Object.keys(attrs);
+    const keys = Object.keys(attrs || {});
     if (keys.length === 0) return '';
     return keys
       .map((key) => {

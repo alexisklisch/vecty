@@ -1,13 +1,13 @@
 type Node = TextNode | ElementNode
 
-interface TextNode {
+export interface TextNode {
   text?: string
   expression?: string
 }
 
 export interface ElementNode {
   tag: string
-  attributes: { [key: string]: string | Expression }
+  attr: { [key: string]: string | Expression }
   children: Node[]
 }
 
@@ -47,7 +47,7 @@ export class SimpleXMLParser {
     this.pos++ // Salta '<'
     const tag = this.readUntil(/[\s>/]/)
     this.skipWhitespace()
-    const attributes = this.parseAttributes()
+    const attr = this.parseAttributes()
     this.skipWhitespace()
 
     let children: Node[] = []
@@ -62,7 +62,7 @@ export class SimpleXMLParser {
         this.pos++ // Salta '>'
       }
     }
-    return { tag, attributes, children }
+    return { tag, attr, children }
   }
 
   private parseAttributes(): { [key: string]: string | Expression } {
