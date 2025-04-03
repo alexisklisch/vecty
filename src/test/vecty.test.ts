@@ -1,5 +1,5 @@
-import Vecty from '@/index'
 import { expect, test } from 'vitest'
+import Vecty from '@/index'
 
 const svg1 = `
 <svg standar="4,3,2,1" calidad="243">
@@ -57,4 +57,53 @@ test('Dasarma y vuelve a armar un SVG complejo', () => {
   })
 
   expect(vecty.svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg"')).toBe(true)
+})
+
+test('Expresiones reciben variables correctamente', () => {
+  const vecty = new Vecty(`<test author={metadata.author}>
+    <manifest vecty>
+      <metadata>
+        {
+          "author": "Alexis Fleitas Klisch"
+        }
+      </metadata>
+      <variables>
+        {
+         "color": "blue"
+        }
+      </variables>
+    </manifest>
+    <rect color={system.color} width={user.size} heigth={user.size} />
+  </test>`, {
+    variables: {
+      size: 96
+    }
+  })
+
+  const result = vecty.svg
+  console.log(result)
+
+  expect(result).toBe('<test author="Alexis Fleitas Klisch"><rect color="blue" width="96" heigth="96"/></test>')
+})
+
+
+test('El template usa variables fallback', () => {
+  const vecty = new Vecty(`<test>
+    <manifest vecty>
+      <variables>
+        {
+          "colors": {
+            "primary": "purple",
+            "second": "lightblue"
+          }
+        }
+      </variables>
+    </manifest>
+    <rect color={user?.colors?.primary || system.colors.primary}/>
+  </test>`)
+
+  const result = vecty.svg
+  console.log(result)
+
+  expect(result).toBe('<test><rect color="purple"/></test>')
 })

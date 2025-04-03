@@ -1,16 +1,17 @@
 import { evaluateExpression } from "@/utils/evaluateExpression"
 import { SimpleXMLParser } from "@/utils/xmlParser/xmlParser"
-import type { VectyConfig } from '@/types'
 import { assignInitialVars } from "./utils/assignVariables"
 import { parser } from "./utils/xmlParser"
+import type { VectyConfig } from '@/types'
 
 class Vecty {
   public variables: Record<string, any> = {}
   #SVGTemp: string
 
   constructor(private readonly userSVG: string, private config: VectyConfig = {}) {
-    this.#SVGTemp = assignInitialVars(userSVG, this.variables, config)
-
+    const { cleanSVG, cleanVariables } = assignInitialVars(userSVG, config)
+    this.#SVGTemp = cleanSVG
+    this.variables = cleanVariables
   }
 
   get object() {
@@ -35,7 +36,6 @@ class Vecty {
         if (elementAttrs)
           for (const [attrName, attrValue] of Object.entries(elementAttrs)) {
             if (attrValue.expression) {
-              console.log(`Tenemos el elemento ${currentNode.tag} con el atributo ${attrName} del valor ${JSON.stringify(attrValue.expression)}`)
               const result = evaluateExpression(attrValue.expression, this.variables)
               typeof result === 'object'
                 ? currentNode.attr[attrName] = JSON.stringify(JSON.stringify(result)).slice(1, -1)
@@ -51,9 +51,6 @@ class Vecty {
         return
       }
 
-      if (currentNode.text) {
-        return
-      }
 
       // Situación, es una expresión
       if (currentNode.expression) {
