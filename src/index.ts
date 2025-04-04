@@ -1,10 +1,10 @@
-import { type Font, parse } from 'opentype.js'
+import { parse } from 'opentype.js'
 import { evaluateExpression } from "@/utils/evaluateExpression"
-import { SimpleXMLParser } from "@/utils/xmlParser/xmlParser"
-import { assignInitialVars } from "./utils/assignVariables"
-import { parser } from "./utils/xmlParser"
+import { assignInitialVars } from "@/utils/assignVariables"
+import { parser } from "@/utils/xmlParser"
+import { syllabler } from '@/utils/syllaber'
+import type { Font } from 'opentype.js'
 import type { VectyConfig } from '@/types'
-import { syllabler } from './utils/syllaber'
 
 class Vecty {
   public variables: Record<string, any> = {}
@@ -17,9 +17,7 @@ class Vecty {
   }
 
   get object() {
-    const parserConstructor = new SimpleXMLParser(this.#SVGTemp)
-    const [svgParsed] = parserConstructor.parse()
-
+    const [svgParsed] = parser.parse(this.#SVGTemp)
     this.#recursiveSVG(svgParsed, undefined, undefined)
 
     return [svgParsed]
