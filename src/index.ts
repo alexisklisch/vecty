@@ -11,7 +11,8 @@ class Vecty {
   #SVGTemp: string
 
   constructor(private readonly userSVG: string, private config: VectyConfig = {}) {
-    const { cleanSVG, cleanVariables } = assignInitialVars(userSVG, config)
+    const svgWithoutComments = userSVG.replace(/\/\*[\s\S]*?\*\//g, '') // Elimina los comentarios
+    const { cleanSVG, cleanVariables } = assignInitialVars(svgWithoutComments, config)
     this.#SVGTemp = cleanSVG
     this.variables = cleanVariables
   }
@@ -60,23 +61,26 @@ class Vecty {
 
           if (Object.keys(elementAttrs).includes('vecty:expand')) {
             const [x, y, boxWidth, boxHeight] = (elementAttrs['vecty:box'] || '0 0 100 100').split(' ').map(Number)
-            const fontSize = Number(elementAttrs['font-size']) || 16
+            const boxStroke = elementAttrs['vecty:box-stroke']
             const textAlign = elementAttrs['vecty:text-align'] || 'left'
-            const letterSpacing = Number(elementAttrs['letter-spacing']) || 0
             const verticalAlign = elementAttrs['vecty:vertical-align'] || 'top'
             const textTransform = elementAttrs['vecty:text-transform'] || 'none'
             const lineHeight = Number(elementAttrs['vecty:line-height']) || 0
-            const fontFamily = elementAttrs['font-family'] || 'Arial'
             const fontWeight = Number(elementAttrs['vecty:font-weight']) || 400
+            const fontFamily = elementAttrs['font-family'] || 'Arial'
+            const fontSize = Number(elementAttrs['font-size']) || 16
+            const letterSpacing = Number(elementAttrs['letter-spacing']) || 0
 
             // Modificar el case del texto en caso de ser necesario
             if (textTransform === 'uppercase') text = text.toUpperCase()
             else if (textTransform === 'lowercase') text = text.toLowerCase()
 
-
+            console.log(fontWeight, ' es el peso')
 
             // Seleccionar fuente actual
             const selectedFont = this.config.fonts!.find(font => font.name === fontFamily && font.weight === fontWeight)
+            console.log('la fuente seleccionada -> ', selectedFont)
+            console.log('las fuentes -> ', this.config.fonts)
             if (!selectedFont) throw new Error('<poster-textbox/> debe tener al menos una fuente válida.')
             const buffer = selectedFont.src
             const font = parse(buffer)
@@ -172,31 +176,32 @@ class Vecty {
               attr: {},
               children: path
             }
-            console.log('acaaaaaaaaaaaaaaa ', parent)
-            parent!.children[currentPosition!] = nuevo
 
             // Si hay un box stroke, agregar el cuadrado
-            /* if (boxStroke) {
-              nuevo.g.unshift({
-                rect: [],
-                ':@': {
-                  stroke: boxStroke,
-                  fill: 'transparent',
-                  x: x,
-                  y: y,
-                  height: boxHeight,
-                  width: boxWidth
-                }
-              })
-            } */
+            console.log(`Los valores de box afuera son: ${x}, ${y}, ${boxHeight} y ${boxWidth}`)
+            if (boxStroke) {
+
+              const rectWithStroke = {
+                tag: 'rect',
+                attr: {
+                  x: String(x),
+                  y: String(y),
+                  height: String(boxHeight),
+                  width: String(boxWidth),
+                  stroke: String(boxStroke),
+                  fill: 'transparent'
+                },
+                children: []
+              }
+
+              nuevo.children.unshift(rectWithStroke)
+            }
+
+            parent!.children[currentPosition!] = nuevo
+
           }
 
-
-
-
-
         }
-
 
         for (const [key, value] of Object.entries(currentNode.children)) {
           this.#recursiveSVG(value as Record<string, any>, currentNode, +key)
