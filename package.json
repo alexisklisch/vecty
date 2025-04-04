@@ -7,7 +7,8 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "test": "vitest",
-    "temp": "tsx src/temp.ts"
+    "temp": "tsx src/temp.ts",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "Alexis Fleitas Klisch",
