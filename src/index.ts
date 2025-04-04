@@ -1,4 +1,4 @@
-import { Font, parse, Path } from 'opentype.js'
+import { type Font, parse } from 'opentype.js'
 import { evaluateExpression } from "@/utils/evaluateExpression"
 import { SimpleXMLParser } from "@/utils/xmlParser/xmlParser"
 import { assignInitialVars } from "./utils/assignVariables"
@@ -61,8 +61,6 @@ class Vecty {
           }
 
           if (Object.keys(elementAttrs).includes('vecty:expand')) {
-            console.log(`${text} es expandible!`)
-
             const [x, y, boxWidth, boxHeight] = (elementAttrs['vecty:box'] || '0 0 100 100').split(' ').map(Number)
             const fontSize = Number(elementAttrs['font-size']) || 16
             const textAlign = elementAttrs['vecty:text-align'] || 'left'
