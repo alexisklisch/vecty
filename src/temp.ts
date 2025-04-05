@@ -14,8 +14,7 @@ const vecty = new Vecty(svg, {
     colors: {
       red: '#423423',
       blues: ['#123123', '#432343']
-    },
-    JSON
+    }
   },
   fonts: [
     {

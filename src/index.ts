@@ -66,7 +66,7 @@ class Vecty {
             const verticalAlign = elementAttrs['vecty:vertical-align'] || 'top'
             const textTransform = elementAttrs['vecty:text-transform'] || 'none'
             const lineHeight = Number(elementAttrs['vecty:line-height']) || 0
-            const fontWeight = Number(elementAttrs['vecty:font-weight']) || 400
+            const fontWeight = Number(elementAttrs['font-weight']) || 400
             const fontFamily = elementAttrs['font-family'] || 'Arial'
             const fontSize = Number(elementAttrs['font-size']) || 16
             const letterSpacing = Number(elementAttrs['letter-spacing']) || 0
@@ -74,10 +74,9 @@ class Vecty {
             // Modificar el case del texto en caso de ser necesario
             if (textTransform === 'uppercase') text = text.toUpperCase()
             else if (textTransform === 'lowercase') text = text.toLowerCase()
-
             // Seleccionar fuente actual
             const selectedFont = this.config.fonts!.find(font => font.name === fontFamily && font.weight === fontWeight)
-            if (!selectedFont) throw new Error('<poster-textbox/> debe tener al menos una fuente válida.')
+            if (!selectedFont) throw new Error('<text/> debe tener al menos una fuente válida.')
             const buffer = selectedFont.src
             const font = parse(buffer)
             // Utilidad para calcular siempre con la fuente seleccionada
@@ -175,8 +174,6 @@ class Vecty {
 
             // Si hay un box stroke, agregar el cuadrado
             if (boxStroke) {
-              console.log(`Los valores de box afuera son: ${x}, ${y}, ${boxHeight} y ${boxWidth}`)
-
               const rectWithStroke = {
                 tag: 'rect',
                 attr: {
