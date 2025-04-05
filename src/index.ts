@@ -75,12 +75,8 @@ class Vecty {
             if (textTransform === 'uppercase') text = text.toUpperCase()
             else if (textTransform === 'lowercase') text = text.toLowerCase()
 
-            console.log(fontWeight, ' es el peso')
-
             // Seleccionar fuente actual
             const selectedFont = this.config.fonts!.find(font => font.name === fontFamily && font.weight === fontWeight)
-            console.log('la fuente seleccionada -> ', selectedFont)
-            console.log('las fuentes -> ', this.config.fonts)
             if (!selectedFont) throw new Error('<poster-textbox/> debe tener al menos una fuente válida.')
             const buffer = selectedFont.src
             const font = parse(buffer)
@@ -173,17 +169,18 @@ class Vecty {
 
             const nuevo = {
               tag: 'g',
-              attr: {},
+              attr: elementAttrs,
               children: path
             }
 
             // Si hay un box stroke, agregar el cuadrado
-            console.log(`Los valores de box afuera son: ${x}, ${y}, ${boxHeight} y ${boxWidth}`)
             if (boxStroke) {
+              console.log(`Los valores de box afuera son: ${x}, ${y}, ${boxHeight} y ${boxWidth}`)
 
               const rectWithStroke = {
                 tag: 'rect',
                 attr: {
+                  aca: 'Espectacular',
                   x: String(x),
                   y: String(y),
                   height: String(boxHeight),

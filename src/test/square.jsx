@@ -30,13 +30,13 @@
       <polygon points="489.5,545 434,611 560,611" fill={user.colors?.gradient2 || system.colors.gradient2}/>
       <text
         vecty:expand
-        vecty:stroke="yellow"
+        vecty:box-stroke="yellow"
         font-family="Montserrat"
         vecty:font-weightweight="500"
-        vecty:box-size="30 545 1370 66"
         vecty:font-size="46"
         vecty:vertical-align="bottom"
         vecty:text-transform="uppercase"
+        vecty:box="30 545 370 66"
         fill="white"
       >Precio de la publicación</text>
       <poster-textbox

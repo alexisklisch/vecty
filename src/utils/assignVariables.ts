@@ -37,6 +37,5 @@ export function assignInitialVars(initialSVG: string, config: VectyConfig) {
   const { variables } = config
   vars.user = variables!
 
-  console.log('Las variables son -> ', JSON.stringify(vars, null, 2))
   return { cleanSVG: currentSVG, cleanVariables: vars }
 }
