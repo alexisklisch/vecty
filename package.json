@@ -1,13 +1,18 @@
 {
   "name": "vecty",
-  "version": "0.0.2",
+  "version": "0.0.6",
   "description": "Add variables to SVG files.",
   "sideEffects": false,
   "main": "src/index.ts",
+  "files": [
+    "./dist"
+  ],
+  "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
       "require": "./dist/cjs/main.js",
-      "import": "./dist/esm/main.js"
+      "import": "./dist/mjs/main.js",
+      "types": "./dist/types/index.d.ts"
     }
   },
   "scripts": {
@@ -15,7 +20,7 @@
     "test": "vitest",
     "temp": "tsx src/temp.ts",
     "build": "tsc",
-    "build:rs": "rspack build"
+    "build:rs": "rspack build && tsc && tsc-alias"
   },
   "keywords": [],
   "author": "Alexis Fleitas Klisch",

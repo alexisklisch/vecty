@@ -1,5 +1,5 @@
 import { evaluateExpression } from '@/utils/evaluateExpression'
-import type { VectyConfig } from "@/types"
+import type { VectyConfig } from "@/vectyTypes"
 
 export function assignInitialVars(initialSVG: string, config: VectyConfig) {
   let currentSVG = initialSVG

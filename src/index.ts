@@ -4,7 +4,7 @@ import { assignInitialVars } from "@/utils/assignVariables"
 import { parser } from "@/utils/xmlParser"
 import { syllabler } from '@/utils/syllaber'
 import type { Font } from 'opentype.js'
-import type { VectyConfig } from '@/types'
+import type { VectyConfig } from '@/vectyTypes'
 
 class Vecty {
   public variables: Record<string, any> = {}
