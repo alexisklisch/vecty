@@ -1,6 +1,7 @@
 import { parse } from 'opentype.js'
 import { evaluateExpression } from "@/utils/evaluateExpression"
 import { assignInitialVars } from "@/utils/assignVariables"
+import { fetchBase64 } from "@/utils/fetchBase64"
 import { parser } from "@/utils/xmlParser"
 import { syllabler } from '@/utils/syllaber'
 import type { Font } from 'opentype.js'
@@ -134,8 +135,6 @@ class Vecty {
               }
             }
 
-
-
             let currentX = x
             let currentY = y
             const pathData: string[] = []
@@ -208,11 +207,17 @@ class Vecty {
       // Situación, es una expresión
       if (currentNode.expression) {
         parent!.children[currentPosition!] = evaluateExpression(currentNode.expression, this.variables)
+
+        // PELIGROSO (no hubo demasiados tests)
+        // Luego de resolver la expresión, vuelve a pasar por el mismo nodo
+        this.#recursiveSVG(parent!.children[currentPosition!], parent, currentPosition)
         return
       }
 
     }
   }
+
+  static fetchBase64 = fetchBase64
 }
 
 // Función externa modificada para incluir kerning
@@ -256,3 +261,4 @@ function restoreCapitalization(originalWord: string, syllabes: string[]) {
 }
 
 export default Vecty
+export { fetchBase64 }
