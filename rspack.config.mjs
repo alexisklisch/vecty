@@ -6,44 +6,6 @@ import { defineConfig } from "@rspack/cli";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-/* export default {
-  module: {
-    rules: [
-      {
-        test: /\.ts$/,
-        exclude: [/node_modules/, /test/],
-        loader: 'builtin:swc-loader',
-        options: {
-          jsc: {
-            parser: {
-              syntax: 'typescript',
-            },
-          },
-        },
-        type: 'javascript/auto',
-      },
-    ],
-  },
-  resolve: {
-    extensions: ['.ts', '.js'],
-    alias: {
-      '@': resolve(__dirname, 'src'),
-    },
-  },
-  output: {
-    filename: 'vecty.bundle.js',
-    library: {
-      type: 'commonjs2',       // o 'commonjs2', según tus necesidades
-      export: 'default', // desempaqueta el default export
-    },
-    globalObject: 'global'
-  },
-}; */
-
-
-// rspack.config.mjs
-
-
 const base = {
   entry: "./src/index.ts",
   resolve: {
