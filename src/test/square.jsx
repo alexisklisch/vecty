@@ -1,77 +1,76 @@
 <svg width="1080" height="1080" viewBox="0 0 1080 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <manifest vecty>
-    <variables>
-      {
-        {
-          "colors": {
-            "primary": {
-              "50": "#FCE8EC",
-              "100": "#FAD6DC",
-              "200": "#F5A8B6",
-              "300": "#F07F94",
-              "400": "#EC5671",
-              "500": "#E7284B",
-              "600": "#CA1737",
-              "700": "#97112A",
-              "800": "#650B1C",
-              "900": "#32060E",
-              "950": "#1B0308"
+    <vecty:variables content={{
+          colors: {
+            primary: {
+              50: "#FCE8EC",
+              100: "#FAD6DC",
+              200: "#F5A8B6",
+              300: "#F07F94",
+              400: "#EC5671",
+              500: "#E7284B",
+              600: "#CA1737",
+              700: "#97112A",
+              800: "#650B1C",
+              900: "#32060E",
+              950: "#1B0308"
             },
-            "secondary": {
-              "50": "#FDF5E3",
-              "100": "#FAEAC2",
-              "200": "#F5D789",
-              "300": "#F0C24B",
-              "400": "#EDB322",
-              "500": "#CF9911",
-              "600": "#A57A0E",
-              "700": "#7A5B0A",
-              "800": "#553F07",
-              "900": "#2A1F04",
-              "950": "#130E02"
+            secondary: {
+              50: "#FDF5E3",
+              100: "#FAEAC2",
+              200: "#F5D789",
+              300: "#F0C24B",
+              400: "#EDB322",
+              500: "#CF9911",
+              600: "#A57A0E",
+              700: "#7A5B0A",
+              800: "#553F07",
+              900: "#2A1F04",
+              950: "#130E02"
             },
-            "grey": {
-              "0": "#F1F1F1",
-              "50": "#F5F5F5",
-              "100": "#EBEBEB",
-              "200": "#D9D9D9",
-              "300": "#C5C5C5",
-              "400": "#A8A8A8",
-              "500": "#8C8C8C",
-              "600": "#707070",
-              "700": "#545454",
-              "800": "#383838",
-              "900": "#1C1C1C",
-              "950": "#0F0F0F"
+            grey: {
+              0: "#F1F1F1",
+              50: "#F5F5F5",
+              100: "#EBEBEB",
+              200: "#D9D9D9",
+              300: "#C5C5C5",
+              400: "#A8A8A8",
+              500: "#8C8C8C",
+              600: "#707070",
+              700: "#545454",
+              800: "#383838",
+              900: "#1C1C1C",
+              950: "#0F0F0F"
             },
-            "green": {
-              "50": "#E1FFF6",
-              "100": "#C3FEEC",
-              "200": "#81FDD8",
-              "300": "#45FCC5",
-              "400": "#09FBB3",
-              "500": "#03BF86",
-              "600": "#02825C",
-              "700": "#015F43",
-              "800": "#01412E",
-              "900": "#001E15",
-              "950": "#000F0B"
+            green: {
+              50: "#E1FFF6",
+              100: "#C3FEEC",
+              200: "#81FDD8",
+              300: "#45FCC5",
+              400: "#09FBB3",
+              500: "#03BF86",
+              600: "#02825C",
+              700: "#015F43",
+              800: "#01412E",
+              900: "#001E15",
+              950: "#000F0B"
             }
           },
-          "text": {
-            "operation": {
-              "type": "negociación",
-              "price": "Consultar"
+          text: {
+            operation: {
+              type: "negociación",
+              price: "Consultar"
             },
-            "title": "Excelente oportunidad para aprovechar"
+            title: "Excelente oportunidad para aprovechar"
           },
-          "imgs": {
-            "logoFlyers": "...base64-logo"
+          imgs: {
+            logoFlyers: "...base64-logo"
           }
-        }
-      }
-    </variables>
-  </manifest>
+        }} />
+
+    <vecty:metadata content={{
+      author: 'Alexis Fleitas Klisch',
+      version: '0.0.1'
+    }}/>
   <defs>
     {/*Definición del gradiente diagonal */}
     <linearGradient id="fondoGradiente" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="objectBoundingBox">
@@ -112,7 +111,7 @@
         fill={system.colors.grey[0]}
       >{user.text?.operation?.price
         ? user.text?.operation?.price
-        : system.publication.operation.price
+        : system.text?.operation?.price
       }</text>
     </g>
 

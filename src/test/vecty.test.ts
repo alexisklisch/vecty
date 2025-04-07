@@ -2,7 +2,6 @@ import { expect, test } from 'vitest'
 import { readFile, writeFile } from 'node:fs/promises'
 import Vecty, { fetchBase64 } from '@/index'
 
-
 const montserrat400 = await fetch('https://cdn.jsdelivr.net/fontsource/fonts/rubik@latest/latin-400-normal.ttf')
   .then(data => data.arrayBuffer())
 const montserrat500 = await fetch('https://cdn.jsdelivr.net/fontsource/fonts/rubik@latest/latin-500-normal.ttf')
@@ -15,10 +14,6 @@ const montserrat900 = await fetch('https://cdn.jsdelivr.net/fontsource/fonts/rub
   .then(data => data.arrayBuffer())
 const svg = await readFile(`${__dirname}/square.jsx`, { encoding: 'utf8' })
 const photo = await fetchBase64('https://dh0ny4gbd8gek.cloudfront.net/properties/ilga43vqfs/img-1?w=1280&format=avif')
-const logoFlyersB64 = await readFile(`${__dirname}/logo-flyers.avif`, { encoding: 'base64' })
-const logoFlyers = `data:avif;base64,${logoFlyersB64}`
-const logoGoogleB64 = await readFile(`${__dirname}/google.png`, { encoding: 'base64' })
-const logoGoogle = `data:png;base64,${logoGoogleB64}`
 
 test('Lee un jsx y devuelve el SVG', async () => {
 
@@ -26,7 +21,6 @@ test('Lee un jsx y devuelve el SVG', async () => {
     variables: {
       text: {
         operation: {
-          price: 'USD 168.200',
           type: 'Venta'
         },
         typology: "Quinta",
@@ -44,7 +38,7 @@ test('Lee un jsx y devuelve el SVG', async () => {
       },
       imgs: {
         property: [photo],
-        realEstateLogo: logoFlyers
+        realEstateLogo: photo
       }
     },
     fonts: [
@@ -78,3 +72,23 @@ test('Lee un jsx y devuelve el SVG', async () => {
   await writeFile('template.svg', vecty.svg)
   expect(vecty.svg.startsWith('<svg')).toBe(true)
 })
+
+/* test('Lee las variables de la etiqueta <vecty:variables/>', async () => {
+
+  const svgx = `<svg>
+    <vecty:variables content={{
+      colors: {
+        primary: '#424242',
+        second: 'red',
+        tercer: (() => 456 * 623)(),
+        cuarto: {
+          mes: 'Abril'
+        }
+        }
+    }} />
+  </svg>`
+
+  const vecty = new Vecty(svgx)
+  await writeFile('template.svg', vecty.svg)
+  expect(vecty.svg.startsWith('<svg')).toBe(true)
+}) */
