@@ -209,6 +209,7 @@ class Vecty {
         parent!.children[currentPosition!] = evaluateExpression(currentNode.expression, this.variables)
 
         // PELIGROSO (no hubo demasiados tests)
+        // Luego de resolver la expresión, vuelve a pasar por el mismo nodo
         this.#recursiveSVG(parent!.children[currentPosition!], parent, currentPosition)
         return
       }

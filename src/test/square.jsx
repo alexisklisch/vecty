@@ -58,11 +58,15 @@
               "950": "#000F0B"
             }
           },
-          "publication": {
+          "text": {
             "operation": {
-              "type": "Venta",
+              "type": "negociación",
               "price": "Consultar"
-            }
+            },
+            "title": "Excelente oportunidad para aprovechar"
+          },
+          "imgs": {
+            "logoFlyers": "...base64-logo"
           }
         }
       }
@@ -81,7 +85,7 @@
     </filter>
   </defs>
 
-  <image href={user.imgs.photo} width="1080" height="611" preserveAspectRatio="xMidYMid slice"/>
+  <image href={user.imgs.property[0]} width="1080" height="611" preserveAspectRatio="xMidYMid slice"/>
   <g>
     <rect y="611" width="1080" height="469" fill="#eaeaea"/> {/*Fondo blanco */}
     <g> {/*Precio */}
@@ -95,7 +99,7 @@
         vecty:text-align="left"
         vecty:vertical-align="bottom"
         vecty:text-transform="uppercase"
-        vecty:box="30 545 370 66"
+        vecty:box="30 538 370 66"
         fill={system.colors.grey[0]}
       >Precio de la publicación</text>
       <text
@@ -106,8 +110,8 @@
         font-size="46"
         vecty:text-transform="uppercase"
         fill={system.colors.grey[0]}
-      >{user.publication?.operation?.price && user.publication?.operation?.currency
-        ? `${user.publication.operation.currency} ${(user.publication.operation.price).toLocaleString('es-AR')}`
+      >{user.text?.operation?.price
+        ? user.text?.operation?.price
         : system.publication.operation.price
       }</text>
     </g>
@@ -121,7 +125,7 @@
         font-size="30"
         vecty:line-height="5"
         fill="#383838"
-      >Departamento en venta - 3 ambientes - Financiamiento
+      >{user.text?.title || system.text?.title}
       </text>
 
       <g> {/* Features */}
@@ -130,7 +134,7 @@
           {
             tag: 'g',
             attr: {},
-            children: user.features.map((current, index) => {
+            children: user.text.features.map((current, index) => {
               // Distribuye las features en un array
               const x = index % 2 === 0 ? 30 : 290;
               const y = index < 2 ? 846 : 896;
@@ -208,7 +212,8 @@
       
       <g> {/* Logo inmobiliaria */}
         <circle cy="618" cx="900" r="100" fill="#F5F5F5"/>
-        <rect y="550" x="830" width="140" height="140" fill="{{expr('lime'), later()}}" stroke="red" />
+        {/*Containe image*/}
+        <image href={user.imgs.realEstateLogo} x="830" y="550" width="140" height="140"/>
       </g>
 
       <g> {/* Tipo de casa y operación */}
@@ -218,10 +223,10 @@
           vecty:text-align="center"
           font-weight="500"
           vecty:text-transform="uppercase"
-          vecty:box="650 780 360 50"
+          vecty:box="660 760 360 50"
           font-size="46"
           fill={system.colors.grey[50]}
-        >Casa en
+        >{`${user.text?.typology || system.text?.typology} en`}
         </text>
         <text
           vecty:expand
@@ -229,10 +234,10 @@
           vecty:text-align="center"
           font-weight="900"
           vecty:text-transform="uppercase"
-          vecty:box="650 830 360 78"
+          vecty:box="610 810 430 78"
           font-size="78"
           fill={system.colors.grey[50]}
-        >Venta
+        >{user.text?.operation?.type || system.text?.operation?.type}
         </text>
       </g>
     </g> 
