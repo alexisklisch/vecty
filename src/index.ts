@@ -1,17 +1,36 @@
 import { evaluateExpression } from "@/utils/evaluateExpression"
 import { assignInitialVars } from "@/utils/assignVariables"
 import { parser } from "@/utils/xmlParser"
-import type { VectyConfig } from '@/vectyTypes'
+import type { VectyConfig, VectyPlugin } from '@/vectyTypes'
+import { ElementNode } from "./utils/xmlParser/commonTypes"
 
 class Vecty {
   public variables: Record<string, any> = {}
   #SVGTemp: string
+  #plugins: VectyPlugin[] = []
 
   constructor(private readonly userSVG: string, private config: VectyConfig = {}) {
     const svgWithoutComments = userSVG.replace(/\/\*[\s\S]*?\*\//g, '') // Elimina los comentarios
     const { cleanSVG, cleanVariables } = assignInitialVars(svgWithoutComments, config)
     this.#SVGTemp = cleanSVG
     this.variables = cleanVariables
+
+      // 2) registra plugins
+      ; (config.plugins || []).forEach(p => this.#use(p))
+
+
+    // 3) hook init de cada plugin
+    for (const plugin of this.#plugins) {
+      plugin.init?.(this, this.variables)
+    }
+  }
+
+  /** Registra un plugin (antes de render) */
+  #use(plugin: VectyPlugin) {
+    if (this.#plugins.find(p => p.name === plugin.name)) {
+      throw new Error(`Plugin '${plugin.name}' ya registrado`)
+    }
+    this.#plugins.push(plugin)
   }
 
   get object() {
@@ -26,6 +45,23 @@ class Vecty {
 
   #recursiveSVG(currentNode: Record<string, any>, parent?: Record<string, any>, currentPosition?: number) {
     if (typeof currentNode === 'object') {
+
+      // 1) hook onElement
+      for (const plugin of this.#plugins) {
+        if (plugin.onElement) {
+          const r = plugin.onElement(currentNode as ElementNode, this.variables)
+          if (r === null) {
+            // eliminar nodo
+            if (parent && typeof currentPosition === 'number') parent.children.splice(currentPosition, 1)
+            return
+          }
+          if (r !== undefined) {
+            console.log('Hemos llegado')
+            currentNode = r
+            parent!.children[currentPosition!] = r
+          }
+        }
+      }
 
 
       if (currentNode.children) {

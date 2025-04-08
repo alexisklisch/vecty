@@ -1,19 +1,26 @@
+import type Vecty from "@/index";
+import { ElementNode } from "./utils/xmlParser/commonTypes";
+
 export interface VectyConfig {
   variables?: Record<string, any>
-  fonts?: FontsConfig[]
+  plugins?: VectyPlugin[]
 }
 
-type TextWeight = 'thin' | 'light' | 'regular' | 'medium' | 'bold' | 'black'
-  | 'extrabold' | 'extralight' | 'semibold' | 'ultralight' | 'ultrabold'
-  | 'heavy' | 'extraheavy' | 'demibold' | 'demilight' | 'book' | 'normal' | number
+export interface VectyPlugin {
+  /** Nombre único */
+  name: string;
 
-type TextStyle = 'normal' | 'italic' | 'oblique'
-type TextFormat = 'woff' | 'woff2' | 'truetype' | 'opentype' | 'embedded-opentype' | 'svg'
+  /** Se llama justo después de new Vecty() */
+  init?(vecty: Vecty, variables: VectyConfig['variables']): void;
 
-interface FontsConfig {
-  name: string
-  weight: TextWeight
-  style?: TextStyle
-  src: ArrayBuffer
-  format?: TextFormat
+  /** Se llama antes de procesar cada nodo del AST.
+   *  Devuelve:
+   *   - `null` para eliminar el nodo
+   *   - un nuevo nodo para reemplazarlo
+   *   - `undefined` para no tocarlo
+   */
+  onElement?(node: ElementNode, variables: VectyConfig['variables']): ElementNode | null | undefined;
+
+  /** Se llama al final, sobre el SVG string */
+  afterRender?(svg: string, variables: VectyConfig['variables']): string;
 }
