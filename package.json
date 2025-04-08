@@ -1,6 +1,6 @@
 {
   "name": "vecty",
-  "version": "plugin.alfa.1",
+  "version": "1.0.0-alpha.0",
   "description": "Add variables to SVG files.",
   "sideEffects": false,
   "main": "src/index.ts",
