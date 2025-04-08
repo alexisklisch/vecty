@@ -56,8 +56,6 @@ class Vecty {
             return
           }
           if (r !== undefined) {
-            console.log('Hemos llegado')
-            currentNode = r
             parent!.children[currentPosition!] = r
           }
         }
