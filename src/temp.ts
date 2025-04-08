@@ -1,30 +1,24 @@
 console.time('testix')
 import Vecty from '@/index'
-import { readFile } from 'node:fs/promises'
 
-const svg = await readFile('./temp.jsx', { encoding: 'utf8' })
-console.log(svg)
 
-const montserrat400 = await fetch('https://cdn.jsdelivr.net/fontsource/fonts/montserrat@latest/latin-400-normal.ttf')
-  .then(data => data.arrayBuffer())
+const svg = `
+<svg heigth="1200" width="1800">
+  <vecty:variables content={{
+      type: 'maravilloso'
+  }} />
+  <rect x="36" y="486" cosa={template.type || user.type} />
+  <text vecty:expand > {'Esto es realmente ' + template.type || user.type}</text>
+</svg>`
+
 
 const vecty = new Vecty(svg, {
   variables: {
-    cuestion: 'La vida es así',
-    colors: {
-      red: '#423423',
-      blues: ['#123123', '#432343']
-    }
-  },
-  fonts: [
-    {
-      name: 'Montserrat',
-      weight: 400,
-      src: montserrat400
-    }
-  ]
+    type: 'Hermoso'
+  }
 })
 
+console.log(JSON.stringify(vecty.object, null, 2))
 console.log(vecty.svg)
 
 console.timeEnd('testix')
