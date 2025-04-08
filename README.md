@@ -8,7 +8,7 @@
 
 [![npm version](https://img.shields.io/npm/v/vecty.svg)](https://www.npmjs.com/package/vecty) [![Downloads](https://img.shields.io/npm/dm/vecty.svg)](https://www.npmjs.com/package/vecty) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-> 📦 A zero‑dependency library to render SVG templates with dynamic data, custom fonts and images.
+> 📦 A library to render SVG templates with dynamic data, custom fonts and images.
 
 ---
 
@@ -44,15 +44,18 @@
 ```bash
 # npm
 npm install vecty
-
 # yarn
 yarn add vecty
-
 # pnpm
 pnpm add vecty
-
 # bun
 bun add vecty
+```
+
+### CDN
+
+```plain
+https://cdn.jsdelivr.net/npm/vecty/+esm
 ```
 
 ---
@@ -161,7 +164,7 @@ const v = new Vecty(tpl, {
 
 In your SVG:
 
-```jsx
+```xml
 <text font-family="Montserrat" font-weight="400">Text with Montserrat</text>
 ```
 
@@ -169,7 +172,7 @@ In your SVG:
 
 Convert `<text>` elements into SVG `<path>` shapes, preserving font metrics, kerning, and advanced layout options:
 
-```jsx
+```xml
 <svg width="200" height="50">
   <text vecty:expand font-family="Montserrat" font-weight="400" font-size="40" letter-spacing="1" vecty:box="0 0 200 50">
     Hello World
