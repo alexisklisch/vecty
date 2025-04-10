@@ -4,6 +4,13 @@ import TextExpandedPlugin from '@vecty/expand-plugin'
 import type { VectyConfig } from './vectyTypes'
 import type { ElementNode } from '@/utils/xmlParser/commonTypes'
 import { VectyPlugin } from './types-vecty/plugins'
+import { readFile, readdir, writeFile } from 'node:fs/promises'
+
+const candaraFont = await readFile('src/Candarab.ttf')
+  .then(nodeBuffer => {
+    const { buffer, byteOffset, byteLength } = nodeBuffer
+    return buffer.slice(byteOffset, byteOffset + byteLength) as ArrayBuffer
+  })
 
 
 export const GreenTextPlugin: VectyPlugin = {
@@ -31,22 +38,29 @@ export const GreenTextPlugin: VectyPlugin = {
 
 
 const svg = `
-<svg heigth="1200" width="1800">
+<svg width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg">
   <vecty:variables content={{
+    texto: "No me digas lo que tengo que hacer, porque si yo te dijera lo que tenés que hacer, sería un problema para todos. Por lo tanto, cuando asevero que la vida es una moneda acuñada sobre los lazos de un ex amante de \\"cameyos\\", hazme caso."
   }} />
-  <rect x="36" y="486" cosa={template.type || user.type} />
-  <plugin:expand vecty:box={\`\${16 + 16} \${16 + 16} 0 0\`}>{265 * 235}</plugin:expand>
-  <plugin:green-text vecty:expand > {'Esto es realmente ' + (template.type || user.type)}</plugin:green-text>
+  <rect width="800" height="800" fill="lightgray" cosa={template.type || user.type} />
+  <plugin:expand box-stroke="purple" fill="red" font-family="Candara" font-size="35" font-weight="400" box={\`\${16 + 16} \${16 + 16} 500 500\`}>{template.texto}</plugin:expand>
 </svg>`
-
 
 const vecty = createVecty(svg, {
   variables: {
     type: 'Hermoso'
-  }
+  },
+  plugins: [TextExpandedPlugin],
+  fonts: [
+    {
+      name: 'Candara',
+      src: candaraFont,
+      weight: 400
+    }
+  ]
 
 })
 
-console.log(vecty.svg)
+writeFile('mi-svg.svg', vecty.svg)
 
 console.timeEnd('testix')

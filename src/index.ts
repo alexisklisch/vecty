@@ -44,14 +44,13 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
 
   get svg() { return parser.build(this.object) }
 
-
   #recursiveSVG(currentNode: Record<string, any>, parent?: Record<string, any>, currentPosition?: number) {
     if (typeof currentNode === 'object') {
 
       // 1) hook onElement
       for (const plugin of this.#plugins) {
         if (plugin.onElement) {
-          const r = plugin.onElement(currentNode as ElementNode, { variables: this.variables, evaluateExpression, vectyConfig: this.config })
+          const r = plugin.onElement(currentNode as ElementNode, { variables: this.variables, evaluateExpression, vectyConfig: this.config, parser })
           if (r === null) {
             // eliminar nodo
             if (parent && typeof currentPosition === 'number') parent.children.splice(currentPosition, 1)
@@ -62,7 +61,6 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
           }
         }
       }
-
 
       if (currentNode.children) {
         const elementAttrs: Record<string, any> = currentNode?.attr || {}
@@ -80,14 +78,12 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
           }
         }
 
-
         for (const [key, value] of Object.entries(currentNode.children)) {
           this.#recursiveSVG(value as Record<string, any>, currentNode, +key)
         }
 
         return
       }
-
 
       // Situación, es una expresión
       if (currentNode.expression) {

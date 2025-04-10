@@ -2,12 +2,14 @@ import { evaluateExpression } from "@/utils/evaluateExpression";
 import { VectyConfig } from "@/vectyTypes";
 import { ElementNode, TextNode } from "@/utils/xmlParser/commonTypes";
 import type Vecty from "@/index";
+import { parser } from "@/utils/xmlParser";
 
 
 export interface PluginContext {
   variables: VectyConfig['variables']
   evaluateExpression: typeof evaluateExpression
   vectyConfig: VectyConfig
+  parser: typeof parser
 }
 
 export interface VectyPlugin<C = {}> {

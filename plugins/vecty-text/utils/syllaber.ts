@@ -1,4 +1,4 @@
-const syllabler = function (selectedWord: string) {
+const syllaber = function (selectedWord: string) {
   let stressedFound = false;
   let stressed = 0;
   let letterAccent = -1;
@@ -332,4 +332,4 @@ const syllabler = function (selectedWord: string) {
   return syllables;
 }
 
-export { syllabler }
+export { syllaber }

@@ -13,4 +13,4 @@ export interface ElementNode {
   children: Node[]
 }
 
-export type Node = TextNode
+export type Node = TextNode | ElementNode
