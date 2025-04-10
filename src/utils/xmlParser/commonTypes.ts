@@ -7,10 +7,10 @@ export interface Expression {
   expression: string;
 }
 
+export type Node = TextNode | ElementNode
+
 export interface ElementNode {
   tag: string
   attr: { [key: string]: string | Expression }
   children: Node[]
 }
-
-export type Node = TextNode | ElementNode
