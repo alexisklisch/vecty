@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 import { readFile, writeFile } from 'node:fs/promises'
-import Vecty, { fetchBase64 } from '@/index'
+import Vecty from '@/index'
 
 const montserrat400 = await fetch('https://cdn.jsdelivr.net/fontsource/fonts/rubik@latest/latin-400-normal.ttf')
   .then(data => data.arrayBuffer())
