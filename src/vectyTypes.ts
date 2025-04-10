@@ -1,26 +1,9 @@
-import type Vecty from "@/index";
-import { ElementNode } from "./utils/xmlParser/commonTypes";
+import { VectyPlugin } from "./types-vecty/plugins";
+import { MergePluginConfigs } from "./types-vecty/utils";
 
-export interface VectyConfig {
+export interface BaseConfig {
   variables?: Record<string, any>
-  plugins?: VectyPlugin[]
+  plugins?: readonly VectyPlugin[]
 }
 
-export interface VectyPlugin {
-  /** Nombre único */
-  name: string;
-
-  /** Se llama justo después de new Vecty() */
-  init?(vecty: Vecty, variables: VectyConfig['variables']): void;
-
-  /** Se llama antes de procesar cada nodo del AST.
-   *  Devuelve:
-   *   - `null` para eliminar el nodo
-   *   - un nuevo nodo para reemplazarlo
-   *   - `undefined` para no tocarlo
-   */
-  onElement?(node: ElementNode, variables: VectyConfig['variables']): ElementNode | null | undefined;
-
-  /** Se llama al final, sobre el SVG string */
-  afterRender?(svg: string, variables: VectyConfig['variables']): string;
-}
+export type VectyConfig<P extends readonly VectyPlugin[] = readonly []> = BaseConfig & { plugins?: P } & MergePluginConfigs<P>

@@ -1,15 +1,17 @@
 import { evaluateExpression } from "@/utils/evaluateExpression"
 import { assignInitialVars } from "@/utils/assignVariables"
 import { parser } from "@/utils/xmlParser"
-import type { VectyConfig, VectyPlugin } from '@/vectyTypes'
-import { ElementNode } from "./utils/xmlParser/commonTypes"
+import type { VectyConfig } from '@/vectyTypes'
 
-class Vecty {
+import { ElementNode } from "./utils/xmlParser/commonTypes"
+import type { VectyPlugin } from "./types-vecty/plugins"
+
+class Vecty<P extends readonly VectyPlugin[] = readonly []> {
   public variables: Record<string, any> = {}
   #SVGTemp: string
   #plugins: VectyPlugin[] = []
 
-  constructor(private readonly userSVG: string, private config: VectyConfig = {}) {
+  constructor(private readonly userSVG: string, private config: VectyConfig) {
     const svgWithoutComments = userSVG.replace(/\/\*[\s\S]*?\*\//g, '') // Elimina los comentarios
     const { cleanSVG, cleanVariables } = assignInitialVars(svgWithoutComments, config)
     this.#SVGTemp = cleanSVG
@@ -49,7 +51,7 @@ class Vecty {
       // 1) hook onElement
       for (const plugin of this.#plugins) {
         if (plugin.onElement) {
-          const r = plugin.onElement(currentNode as ElementNode, this.variables)
+          const r = plugin.onElement(currentNode as ElementNode, { variables: this.variables, evaluateExpression, vectyConfig: this.config })
           if (r === null) {
             // eliminar nodo
             if (parent && typeof currentPosition === 'number') parent.children.splice(currentPosition, 1)
@@ -111,3 +113,7 @@ class Vecty {
 }
 
 export default Vecty
+
+export function createVecty<P extends readonly VectyPlugin[]>(svg: string, config: VectyConfig<P>): Vecty<P> {
+  return new Vecty(svg, config as VectyConfig)
+}
