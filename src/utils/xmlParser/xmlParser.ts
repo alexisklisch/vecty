@@ -77,7 +77,8 @@ export class SimpleXMLParser {
       this.pos++ // Salta la comilla de cierre
       return value
     } else if (current === "{") {
-      return { expression: this.parseBracedAttribute() }
+      const code = this.parseCodeBlock().trim()
+      return { expression: code }
     }
     return ""
   }
