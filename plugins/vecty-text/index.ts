@@ -55,6 +55,8 @@ const TextExpandedPlugin: VectyPlugin<Options> = {
       const fontFamily = boxAttributes['font-family']
       const fontSize = Number(boxAttributes['font-size']) || 16
       const letterSpacing = Number(boxAttributes['letter-spacing']) || 0
+      const paragraphGap = Number(boxAttributes['paragraph-gap']) || 0
+      const overflow = boxAttributes['overflow'] || 'visible'
 
 
       if (boxHeight === 0 || boxWidth === 0) throw new Error('Box debe tener al menos 1px de width o 1px de height')
@@ -62,14 +64,17 @@ const TextExpandedPlugin: VectyPlugin<Options> = {
       // If exist paragraph expand every paragraph, else the inner text
       if (paragraphElements.length === 0) paragraphElements.push(node)
 
-      const finalElements = paragraphElements.map(currentParagraph => {
+      let currentParagraphYExe = y - fontSize * .3
+      console.log(currentParagraphYExe)
+
+      const finalElements = paragraphElements.map((currentParagraph) => {
         let text = ''
-        if ((node?.children[0] as TextNode)?.text) { //
-          text = String((node.children[0] as TextNode)?.text)
-        } else if ((node.children[0] as TextNode)?.expression) { // Si el hijo es una expresión, resolverlo y establecerlo como texto
-          text = String(evaluateExpression((node.children[0] as TextNode).expression!, variables!))
-            ; (node.children[0] as TextNode).expression = undefined as unknown as undefined
-          (node.children[0] as TextNode).text = text
+        if (((currentParagraph as ElementNode)?.children[0] as TextNode)?.text) { //
+          text = String(((currentParagraph as ElementNode).children[0] as TextNode)?.text)
+        } else if (((currentParagraph as ElementNode).children[0] as TextNode)?.expression) { // Si el hijo es una expresión, resolverlo y establecerlo como texto
+          text = String(evaluateExpression(((currentParagraph as ElementNode).children[0] as TextNode).expression!, variables!))
+            ; ((currentParagraph as ElementNode).children[0] as TextNode).expression = undefined as unknown as undefined
+          ((currentParagraph as ElementNode).children[0] as TextNode).text = text
         }
 
         // Modificar el case del texto en caso de ser necesario
@@ -138,7 +143,7 @@ const TextExpandedPlugin: VectyPlugin<Options> = {
         }
 
         let currentX = x
-        let currentY = y - fontSize * .3
+        let currentY = currentParagraphYExe
         const pathData: string[] = []
         const scale = fontSize / font.unitsPerEm
 
@@ -152,6 +157,10 @@ const TextExpandedPlugin: VectyPlugin<Options> = {
           else if (textAlign === 'right') currentX = x + boxWidth - withFontWidth(line)
 
           if (i > 0) currentY += (fontSize) + lineHeight
+
+          currentParagraphYExe += fontSize + lineHeight
+          if (textLines.length - 1 === i) currentParagraphYExe += paragraphGap
+
 
           const glyphs = font.stringToGlyphs(line)
           for (const glyph of glyphs) {
@@ -187,150 +196,51 @@ const TextExpandedPlugin: VectyPlugin<Options> = {
             },
             children: []
           }
-
           nuevo.children.unshift(rectWithStroke)
         }
 
         return nuevo
       })
 
-      console.log('Los hijos son -> ', JSON.stringify(finalElements, null, 2))
-
-      return {
-        tag: 'pepe',
-        attr: {},
-        children: []
-      }
-
-      /* let text = ''
-      if ((node?.children[0] as TextNode)?.text) { //
-        text = String((node.children[0] as TextNode)?.text)
-      } else if ((node.children[0] as TextNode)?.expression) { // Si el hijo es una expresión, resolverlo y establecerlo como texto
-        text = String(evaluateExpression((node.children[0] as TextNode).expression!, variables!))
-          ; (node.children[0] as TextNode).expression = undefined as unknown as undefined
-        (node.children[0] as TextNode).text = text
-      }
-
-      // Modificar el case del texto en caso de ser necesario
-      if (textTransform === 'uppercase') text = text.toUpperCase()
-      else if (textTransform === 'lowercase') text = text.toLowerCase()
-      // Seleccionar fuente actual
-      // @ts-ignore <-- SOLUCIONAR TIPOS PARA QUE INCLUYA .fonts
-      const selectedFont = (vectyConfig.fonts as FontsConfig[] | undefined)?.find(font => font.name === fontFamily && font.weight === fontWeight)
-      if (!selectedFont) throw new Error('Debe existir al menos una fuente válida.')
-      const buffer = selectedFont.src
-      const font = parse(buffer)
-      // Utilidad para calcular siempre con la fuente seleccionada
-      const withFontWidth = (text: string) => getTextWidth(text, fontSize, font, letterSpacing)
-
-
-      // Crear un array de palabras
-      const words = text.split(' ')
-      // Array con las líneas
-      const textLines: string[] = []
-      // Linea temporar
-      let tempLine = ''
-
-      while (words.length >= 1) {
-        // selecciona y elimina la primera word[]
-        const currentWord = words.shift()
-        // Analizar nuevos espacios
-        const fullTempLineFontWidth = withFontWidth(`${tempLine} ${currentWord}`)
-        const isBiggerThanBox = fullTempLineFontWidth > boxWidth
-
-
-        // Si el texto es mas grande que la caja de texto...
-        if (isBiggerThanBox) {
-          // Separo en sílabas la palabra
-          let syllabes = syllaber(currentWord!)
-          syllabes = restoreCapitalization(currentWord!, syllabes)
-          // Utilidad para saber siempre el temaño con las sílabas actuales
-          const currentSyllabesFontWidth = () => withFontWidth(`${tempLine} ${syllabes.join('')}-`.trim())
-          // Variable donde se guarda la/s sílaba a enviar debajo
-          let nextLineSyllabes = ''
-
-          // Mientras que la actual palabra con guión sea más grande...
-          while (currentSyllabesFontWidth() > boxWidth) {
-            const currentSyllabe = syllabes.pop()
-            // Si la cantidad de sílabas es igual a 0
-            if (syllabes.length === 0) {
-              // La sílaba de la siguiente línea es la palabra entera
-              nextLineSyllabes = currentWord!
-              // Y detengo el ciclo while
-              break
-            }
-            // Si no ocurre nada de ésto, la sílaba de la próxima línea se le suma ésta sílaba
-            nextLineSyllabes = currentSyllabe + nextLineSyllabes
-          }
-
-          words.unshift(nextLineSyllabes)
-          tempLine = `${tempLine} ${syllabes.join('') ? `${syllabes.join('')}-` : ''}`.trim()
-          textLines.push(tempLine)
-          tempLine = ''
-          nextLineSyllabes = ''
-
-        } else {
-          tempLine += ` ${currentWord}`
-          // Si es la última línea, y entra en la caja, hacer push
-          if (words.length === 0) textLines.push(tempLine.trim())
-        }
-      }
-
-      let currentX = x
-      let currentY = y - fontSize * .3
-      const pathData: string[] = []
-      const scale = fontSize / font.unitsPerEm
-
-      const AllLinesSize = textLines.length * fontSize + (textLines.length - 1) * lineHeight
-      if (verticalAlign === 'middle') currentY = y + (boxHeight - AllLinesSize) / 2
-      else if (verticalAlign === 'bottom') currentY = y + boxHeight - AllLinesSize
-
-      textLines.forEach((line, i) => {
-        if (textAlign === 'left') currentX = x
-        else if (textAlign === 'center') currentX = x + (boxWidth - withFontWidth(line)) / 2
-        else if (textAlign === 'right') currentX = x + boxWidth - withFontWidth(line)
-
-        if (i > 0) currentY += (fontSize) + lineHeight
-
-        const glyphs = font.stringToGlyphs(line)
-        for (const glyph of glyphs) {
-          const glyphWidth = glyph.advanceWidth! * scale
-
-          // Obtener el path, ajustando la altura
-          const path = glyph.getPath(currentX, currentY + fontSize, fontSize)
-          pathData.push(path.toSVG(2))
-          currentX += glyphWidth + letterSpacing
-        }
-
-      })
-
-      const path = pathData.map(currentPath => parser.parse(currentPath)[0])
-
-      const nuevo = {
+      const expandedText: ElementNode = {
         tag: 'g',
-        attr: boxAttributes,
-        children: path
+        attr: {},
+        children: finalElements
       }
 
-      // Si hay un box stroke, agregar el cuadrado
-      if (boxStroke) {
-        const rectWithStroke: ElementNode = {
-          tag: 'rect',
+      // Si el overflow es hidden, agregar un clipPath
+      if (overflow === 'hidden') {
+        const clipPath: ElementNode = {
+          tag: 'clipPath',
           attr: {
-            x: String(x),
-            y: String(y),
-            height: String(boxHeight),
-            width: String(boxWidth),
-            stroke: String(boxStroke),
-            fill: 'transparent'
+            id: `clip-${Math.random().toString(36).substring(2, 15)}`,
           },
-          children: []
+          children: [
+            {
+              tag: 'rect',
+              attr: {
+                x: String(x),
+                y: String(y),
+                height: String(boxHeight),
+                width: String(boxWidth)
+              },
+              children: []
+            }
+          ]
+        }
+        const clipPathId = `url(#${clipPath.attr.id})`
+        const def = {
+          tag: 'defs',
+          attr: {},
+          children: [clipPath]
         }
 
-        nuevo.children.unshift(rectWithStroke)
+        expandedText.children.unshift(def)
+        expandedText.attr['clip-path'] = clipPathId
+
       }
 
-      return nuevo */
+      return expandedText
     }
 
   }
