@@ -41,14 +41,28 @@ export class XMLBuilder {
    * Reconstruye los atributos sin aplicar escapes, para conservar
    * el mismo formato original.
    */
-  private buildAttributes(attrs: { [key: string]: string | Expression }): string {
-    const keys = Object.keys(attrs || {});
-    if (keys.length === 0) return '';
+  private buildAttributes(
+    attrs?: { [key: string]: string | Expression }
+  ): string {
+    // Si no vienen attrs o vienen null, devolvemos cadena vacía
+    if (!attrs) {
+      return '';
+    }
+
+    const keys = Object.keys(attrs);
+    if (keys.length === 0) {
+      return '';
+    }
+
     return keys
       .map((key) => {
-        const value = typeof attrs[key] === 'string' ? attrs[key] : (attrs[key] as Expression).expression;
-        return ` ${key}="${value}"`;
+        const val = attrs[key];
+        if (typeof val === "string") {
+          return ` ${key}="${val}"`;
+        } else {
+          return ` ${key}={${val.expression}}`;
+        }
       })
-      .join('');
+      .join("");
   }
 }

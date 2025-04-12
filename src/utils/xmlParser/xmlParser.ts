@@ -76,6 +76,13 @@ export class SimpleXMLParser {
       const value = this.readUntil(current)
       this.pos++ // Salta la comilla de cierre
       return value
+    } else if (current === "`") {
+      // Nuevo caso: backticks → template literal
+      this.pos++; // salta el `
+      const value = this.readUntil("`");
+      this.pos++; // salta el `
+      // Devolvemos una Expression que ya incluye los backticks
+      return { expression: `\`${value}\`` };
     } else if (current === "{") {
       const code = this.parseCodeBlock().trim()
       return { expression: code }
