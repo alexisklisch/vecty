@@ -3,47 +3,74 @@ import { createVecty } from '@/index'
 import TextExpandedPlugin from '@vecty/expand-plugin'
 import type { VectyConfig } from './vectyTypes'
 import type { ElementNode } from '@/utils/xmlParser/commonTypes'
-import { VectyPlugin } from './types-vecty/plugins'
-import { readFile, readdir, writeFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
+import { fetchBase64 } from './utils/fetchBase64'
 
-/* const candaraFont = await readFile('src/CascadiaCode.ttf')
-  .then(nodeBuffer => {
-    const { buffer, byteOffset, byteLength } = nodeBuffer
-    return buffer.slice(byteOffset, byteOffset + byteLength) as ArrayBuffer
-  }) */
 
-const candaraFont = await fetch('https://cdn.jsdelivr.net/fontsource/fonts/rubik@latest/latin-400-normal.ttf')
+const image = await fetchBase64('https://images.pexels.com/photos/3288104/pexels-photo-3288104.png')
+const rubik400 = await fetch('https://cdn.jsdelivr.net/fontsource/fonts/rubik@latest/latin-400-normal.ttf')
+  .then(data => data.arrayBuffer())
+const rubik500 = await fetch('https://cdn.jsdelivr.net/fontsource/fonts/rubik@latest/latin-500-normal.ttf')
+  .then(data => data.arrayBuffer())
+const rubik600 = await fetch('https://cdn.jsdelivr.net/fontsource/fonts/rubik@latest/latin-600-normal.ttf')
+  .then(data => data.arrayBuffer())
+const rubik700 = await fetch('https://cdn.jsdelivr.net/fontsource/fonts/rubik@latest/latin-700-normal.ttf')
+  .then(data => data.arrayBuffer())
+const rubik800 = await fetch('https://cdn.jsdelivr.net/fontsource/fonts/rubik@latest/latin-800-normal.ttf')
+  .then(data => data.arrayBuffer())
+const rubik900 = await fetch('https://cdn.jsdelivr.net/fontsource/fonts/rubik@latest/latin-900-normal.ttf')
   .then(data => data.arrayBuffer())
 
-const svg = `
-<svg width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <vecty:variables content={{
-    texto: "No me digas lo que tengo que hacer, porque si yo te dijera lo que tenés que hacer, sería un problema para todos. Por lo tanto, cuando asevero que la vida es una moneda acuñada sobre los lazos de un ex amante de \\"cameyos\\", hazme caso."
-  }} />
-  <rect width="800" height="800" fill="lightgray" cosa={template.type || user.type} />
-  <plugin:text
-    fill="#363636"
-    font-family="Candara"
-    font-size="32"
-    font-weight="400"
-    paragraph-gap="16"
-    overflow="hidden"
-    box={\`\${16 + 16} \${16 + 16} 650 500\`}
-  >
-    La vida es una lenteja
-  </plugin:text>
-</svg>`
+const svg = await readFile('./src/test/square.jsx', { encoding: 'utf-8' })
 
 const vecty = createVecty(svg, {
   variables: {
-    type: 'Hermoso'
+    imgs: {
+      property: [
+        image
+      ]
+    },
+    text: {
+      features: [
+        'La vida es 2',
+        '4 ambientes',
+        '8 cocheras',
+        'Vida nueva'
+      ]
+    }
   },
   plugins: [TextExpandedPlugin],
   fonts: [
+
     {
-      name: 'Candara',
-      src: candaraFont,
+      name: 'Rubik',
+      src: rubik400,
       weight: 400
+    },
+    {
+      name: 'Rubik',
+      src: rubik500,
+      weight: 500
+    },
+    {
+      name: 'Rubik',
+      src: rubik600,
+      weight: 600
+    },
+    {
+      name: 'Rubik',
+      src: rubik700,
+      weight: 700
+    },
+    {
+      name: 'Rubik',
+      src: rubik800,
+      weight: 800
+    },
+    {
+      name: 'Rubik',
+      src: rubik900,
+      weight: 900
     }
   ]
 

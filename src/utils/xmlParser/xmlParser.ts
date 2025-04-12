@@ -84,25 +84,6 @@ export class SimpleXMLParser {
   }
 
   /**
-   * Maneja el parseo de atributos entre llaves.
-   * Si se detectan dobles llaves, se elimina la primera capa y se conserva el contenido
-   * envuelto en una única pareja de llaves.
-   */
-  private parseBracedAttribute(): string {
-    if (this.xml.startsWith("{{", this.pos)) {
-      this.pos += 2 // Salta '{{'
-      const inner = this.readUntil("}}")
-      this.pos += 2 // Salta '}}'
-      return `{${inner}}`
-    } else {
-      this.pos++ // Salta '{'
-      const inner = this.readUntil("}")
-      this.pos++ // Salta '}'
-      return inner
-    }
-  }
-
-  /**
    * Parsea un bloque de código delimitado por '{' y '}'.
    * Se gestiona la profundidad para soportar anidamientos correctamente.
    */

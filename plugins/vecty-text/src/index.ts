@@ -1,6 +1,6 @@
 import { Font, parse } from 'opentype.js'
-import type { VectyPlugin } from '../../src/types-vecty/plugins'
-import type { ElementNode, TextNode, Node } from '../../src/utils/xmlParser/commonTypes'
+import type { VectyPlugin } from 'vecty/../../src/types-vecty/plugins'
+import type { ElementNode, TextNode, Node } from 'vecty/../../src/utils/xmlParser/commonTypes'
 import { syllaber } from './utils/syllaber'
 
 type TextWeight = 'thin' | 'light' | 'regular' | 'medium' | 'bold' | 'black'
@@ -65,7 +65,6 @@ const TextExpandedPlugin: VectyPlugin<Options> = {
       if (paragraphElements.length === 0) paragraphElements.push(node)
 
       let currentParagraphYExe = y - fontSize * .3
-      console.log(currentParagraphYExe)
 
       const finalElements = paragraphElements.map((currentParagraph) => {
         let text = ''
@@ -158,7 +157,7 @@ const TextExpandedPlugin: VectyPlugin<Options> = {
 
           if (i > 0) currentY += (fontSize) + lineHeight
 
-          currentParagraphYExe += fontSize + lineHeight
+          if (textLines.length - 1 < i) currentParagraphYExe += fontSize + lineHeight
           if (textLines.length - 1 === i) currentParagraphYExe += paragraphGap
 
 
