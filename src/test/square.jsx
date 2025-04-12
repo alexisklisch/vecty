@@ -61,7 +61,7 @@
         price: "Consultar"
       },
       title: "Excelente oportunidad para aprovechar",
-      typology: "Propiedad"
+      typology: user.text.typology || "Propiedad"
     },
     imgs: {
       logoFlyers: "...base64-logo"
@@ -104,7 +104,7 @@
       <plugin:text
         font-family="Rubik"
         font-weight="700"
-        box="30 610 370 95"
+        box="30 620 370 95"
         font-size="46"
         text-transform="uppercase"
         fill={template.colors.grey[0]}
@@ -214,10 +214,11 @@
       <g> {/* Tipo de casa y operación */}
         <plugin:text
           font-family="Rubik"
+          box-stroke="blue"
           text-align="center"
           font-weight="500"
           text-transform="uppercase"
-          box="660 760 360 50"
+          box=`636 760 400 ${template.text.typology.length > 5 ? 80 : 40}`
           font-size="46"
           fill={template.colors.grey[50]}
         >{`${user.text?.typology || template.text?.typology} en`}
@@ -228,7 +229,7 @@
           text-align="center"
           font-weight="900"
           text-transform="uppercase"
-          box="610 810 430 78"
+          box="636 840 400 120"
           font-size="78"
           fill={template.colors.grey[50]}
         >{user.text?.operation?.type || template.text?.operation?.type}
@@ -237,4 +238,4 @@
     </g>
   </g>
   <rect width="1080" height="1080" stroke="magenta" />
-</svg>
+</svg >

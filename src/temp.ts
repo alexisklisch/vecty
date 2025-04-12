@@ -76,6 +76,6 @@ const vecty = createVecty(svg, {
 
 })
 
-writeFile('mi-svg.svg', vecty.svg)
+writeFile('dox.svg', vecty.svg)
 
 console.timeEnd('testix')
