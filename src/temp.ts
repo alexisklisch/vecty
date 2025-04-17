@@ -6,7 +6,6 @@ import type { ElementNode } from '@/utils/xmlParser/commonTypes'
 import { readFile, writeFile } from 'node:fs/promises'
 import { fetchBase64 } from './utils/fetchBase64'
 
-
 const image = await fetchBase64('https://images.pexels.com/photos/3288104/pexels-photo-3288104.png')
 const rubik400 = await fetch('https://cdn.jsdelivr.net/fontsource/fonts/rubik@latest/latin-400-normal.ttf')
   .then(data => data.arrayBuffer())
@@ -22,13 +21,18 @@ const rubik900 = await fetch('https://cdn.jsdelivr.net/fontsource/fonts/rubik@la
   .then(data => data.arrayBuffer())
 
 const svg = await readFile('./src/test/square.jsx', { encoding: 'utf-8' })
+const flyersLogoRaw = await readFile('./src/test/logo-flyers.png', { encoding: 'base64' })
+const flyerLogo = `data:image/png;base64,${flyersLogoRaw}`
 
 const vecty = createVecty(svg, {
   variables: {
     imgs: {
       property: [
         image
-      ]
+      ],
+      brand: {
+        flyers: flyerLogo
+      }
     },
     text: {
       features: [
@@ -36,7 +40,12 @@ const vecty = createVecty(svg, {
         '4 ambientes',
         '8 cocheras',
         'Vida nueva'
-      ]
+      ],
+      typology: 'Departamento',
+      operation: {
+        price: '$ 1.000.000',
+        type: 'Venta'
+      }
     }
   },
   plugins: [TextExpandedPlugin],

@@ -36,9 +36,9 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
   }
 
   get object() {
+
     const [svgParsed] = parser.parse(this.#SVGTemp)
     this.#recursiveSVG(svgParsed, undefined, undefined)
-
     return [svgParsed]
   }
 

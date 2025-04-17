@@ -11,21 +11,8 @@ export function assignInitialVars(initialSVG: string, config: VectyConfig) {
   const { variables } = config
   vars.user = variables || {}
 
-  // 2. Extraer y asignar variables del system
-  const templateElementRegex = /<vecty:variables\b(?:(?:"[^"]*"|'[^']*'|\{[^}]*\}|[^>])*)(\/>|>(?:(?!<\/vecty:variables>).*?)<\/vecty:variables>)/gs
-  const templateElementRaw = currentSVG.match(templateElementRegex)
-  if (templateElementRaw) {
-    const [variablesParsed] = parser.parse(templateElementRaw![0] || '')
-    if (((variablesParsed as ElementNode).attr.content as Expression).expression) {
-      const expressionString = ((variablesParsed as ElementNode).attr.content as Expression).expression
-      const expressionResolved = evaluateExpression(expressionString, vars)
-      vars.template = expressionResolved
-    }
-    // Eliminar el elemento <vecty:variables> del SVG
-    currentSVG = currentSVG.replace(templateElementRegex, '')
-  }
 
-  //  3. Extraer y asignar variables de metadata
+  //  2. Extraer y asignar variables de metadata
   const metadataElementRegex = /<vecty:metadata\b(?:(?:"[^"]*"|'[^']*'|\{[^}]*\}|[^>])*)(\/>|>(?:(?!<\/vecty:metadata>).*?)<\/vecty:metadata>)/gs
   const metadataElementRaw = currentSVG.match(metadataElementRegex)
   if (metadataElementRaw) {
@@ -37,6 +24,20 @@ export function assignInitialVars(initialSVG: string, config: VectyConfig) {
     }
     // Eliminar el elemento <vecty:metadata> del SVG
     currentSVG = currentSVG.replace(metadataElementRegex, '')
+  }
+
+  // 3. Extraer y asignar variables del system
+  const templateElementRegex = /<vecty:variables\b(?:(?:"[^"]*"|'[^']*'|\{[^}]*\}|[^>])*)(\/>|>(?:(?!<\/vecty:variables>).*?)<\/vecty:variables>)/gs
+  const templateElementRaw = currentSVG.match(templateElementRegex)
+  if (templateElementRaw) {
+    const [variablesParsed] = parser.parse(templateElementRaw![0] || '')
+    if (((variablesParsed as ElementNode).attr.content as Expression).expression) {
+      const expressionString = ((variablesParsed as ElementNode).attr.content as Expression).expression
+      const expressionResolved = evaluateExpression(expressionString, vars)
+      vars.template = expressionResolved
+    }
+    // Eliminar el elemento <vecty:variables> del SVG
+    currentSVG = currentSVG.replace(templateElementRegex, '')
   }
 
   return { cleanSVG: currentSVG, cleanVariables: vars }

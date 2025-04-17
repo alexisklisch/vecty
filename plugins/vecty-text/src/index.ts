@@ -24,7 +24,6 @@ interface Options {
 
 const TextExpandedPlugin: VectyPlugin<Options> = {
   name: 'TextExpanded',
-
   onElement(node: ElementNode, { evaluateExpression, variables, vectyConfig, parser }) {
     // intercepta <plugin:expand>
     if (node.tag === 'plugin:text') {
@@ -250,6 +249,7 @@ export default TextExpandedPlugin
 // Función externa modificada para incluir kerning
 function getTextWidth(text: string, fontSize: number, font: Font, kerning: number) {
   const scale = fontSize / font.unitsPerEm;
+
   let width = 0
   const glyphs = font.stringToGlyphs(text)
   for (let i = 0; i < glyphs.length; i++) {

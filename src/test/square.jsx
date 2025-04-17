@@ -1,4 +1,11 @@
-<svg width="1080" height="1080" viewBox="0 0 1080 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg
+  width="1080"
+  height="1080"
+  viewBox="0 0 1080 1080"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+>
   <vecty:variables content={{
     colors: {
       primary: {
@@ -57,11 +64,15 @@
     },
     text: {
       operation: {
-        type: "negociación",
-        price: "Consultar"
+        type: user?.text?.operation?.type || "Negociación",
+        price: user?.text?.operation?.price || "Consultar"
       },
       title: "Excelente oportunidad para aprovechar",
-      typology: user.text.typology || "Propiedad"
+      typology: user?.text?.typology || "Propiedad",
+      contact: {
+        phone: user?.text?.contact?.phone || "¡Contactame ahora mismo!",
+        email: user?.text?.contact?.email || "Vamos a conseguir el mejor precio"
+      }
     },
     imgs: {
       logoFlyers: "...base64-logo"
@@ -85,7 +96,7 @@
     </filter>
   </defs>
 
-  <image href={user.imgs.property[0]} width="1080" height="611" preserveAspectRatio="xMidYMid slice" />
+  <image xlink:href={user.imgs.property[0]} width="1080" height="611" preserveAspectRatio="xMidYMid slice" />
   <g>
     <rect y="611" width="1080" height="469" fill="#eaeaea" /> {/*Fondo blanco */}
     <g> {/*Precio */}
@@ -118,7 +129,7 @@
       <plugin:text
         font-family="Rubik"
         font-weight="600"
-        box="30 730 470 65"
+        box="30 748 470 65"
         font-size="30"
         line-height="5"
         fill="#383838"
@@ -132,8 +143,9 @@
             tag: 'g',
             children: user.text.features.map((current, index) => {
               // Distribuye las features en un array
-              const x = index % 2 === 0 ? 30 : 290;
-              const y = index < 2 ? 846 : 896;
+              const x = index % 2 === 0 ? 34 : 290;
+              const initialYExe = 856
+              const y = index < 2 ? initialYExe : initialYExe + 42;
               const text = current;
               const radius = 6;
               return ({
@@ -150,7 +162,7 @@
                     attr: {
                       "font-family": 'Rubik',
                       "font-weight": "400",
-                      "box": `${x + 17} ${y - 16} 225 26`,
+                      "box": `${x + 17} ${y - 10} 225 26`,
                       "font-size": "26",
                       fill: "#383838"
                     },
@@ -188,7 +200,7 @@
           box="105 975 400 28"
           font-size="28"
           fill="#0F0F0F"
-        >+5411 2456 4562</plugin:text>
+        >{template.text.contact.phone}</plugin:text>
 
         <plugin:text
 
@@ -197,7 +209,7 @@
           box="105 1010 800 28"
           font-size="28"
           fill="#0F0F0F"
-        >inmobiliariapredrito@gmail.com
+        >{template.text.contact.email}
         </plugin:text>
       </g>
     </g>
@@ -208,34 +220,40 @@
       <g> {/* Logo inmobiliaria */}
         <circle cy="618" cx="900" r="100" fill="#F5F5F5" />
         {/*Containe image*/}
-        <image href={user.imgs.realEstateLogo} x="830" y="550" width="140" height="140" />
+        <image href={user.imgs.realEstateLogo || user.imgs.brand.flyers} x="830" y="550" width="140" height="140" />
       </g>
 
       <g> {/* Tipo de casa y operación */}
         <plugin:text
           font-family="Rubik"
-          box-stroke="blue"
           text-align="center"
           font-weight="500"
           text-transform="uppercase"
-          box=`636 760 400 ${template.text.typology.length > 5 ? 80 : 40}`
-          font-size="46"
-          fill={template.colors.grey[50]}
+          box=`636 760 400 ${(function () {
+            const dataMaster = user.text.typology ? user : template
+            if (dataMaster.text.typology.length > 5) return 80
+            return 40
+          })()}`
+        font-size="46"
+        fill={template.colors.grey[50]}
         >{`${user.text?.typology || template.text?.typology} en`}
-        </plugin:text>
+      </plugin:text>
 
-        <plugin:text
-          font-family="Rubik"
-          text-align="center"
-          font-weight="900"
-          text-transform="uppercase"
-          box="636 840 400 120"
-          font-size="78"
-          fill={template.colors.grey[50]}
+      <plugin:text
+        font-family="Rubik"
+        text-align="center"
+        font-weight="900"
+        text-transform="uppercase"
+        box=`636 ${(function () {
+          const dataMaster = user.text.typology ? user : template
+          if (dataMaster.text.typology.length > 5) return 850
+          return 808
+        })()} 400 120`
+      font-size={template.text.operation.type.length > 5 ? "46" : "78"}
+      fill={template.colors.grey[50]}
         >{user.text?.operation?.type || template.text?.operation?.type}
-        </plugin:text>
-      </g>
-    </g>
+    </plugin:text>
   </g>
-  <rect width="1080" height="1080" stroke="magenta" />
+</g>
+  </g >
 </svg >
