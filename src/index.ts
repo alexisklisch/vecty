@@ -52,9 +52,10 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
     const objects = []
     for (const variant of this.#variantList) {
       this.#currentVariant = variant
-      console.log('La variante es -> ', this.#currentVariant)
+
       const [svgParsed] = parser.parse(this.#SVGTemp)
       this.#recursiveSVG(svgParsed, undefined, undefined)
+
       objects.push(svgParsed)
     }
     return objects
