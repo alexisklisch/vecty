@@ -3,7 +3,7 @@ import { parser } from './xmlParser'
 import type { VectyConfig } from "@/vectyTypes"
 import type { ElementNode, Expression } from "@/utils/xmlParser/commonTypes"
 
-export function assignInitialVars(initialSVG: string, config: VectyConfig) {
+export function assignInitialVars(initialSVG: string, config: VectyConfig, currentVariant: string | undefined) {
   let currentSVG = initialSVG
   let vars: { template: Record<string, any>, user: Record<string, any>, metadata: Record<string, any> } = { template: {}, user: {}, metadata: {} }
 
@@ -19,7 +19,7 @@ export function assignInitialVars(initialSVG: string, config: VectyConfig) {
     const [metadataParsed] = parser.parse(metadataElementRaw![0] || '')
     if (((metadataParsed as ElementNode).attr.content as Expression).expression) {
       const expressionString = ((metadataParsed as ElementNode).attr.content as Expression).expression
-      const expressionResolved = evaluateExpression(expressionString, vars)
+      const expressionResolved = evaluateExpression(expressionString, vars, currentSVG)
       vars.metadata = expressionResolved
     }
     // Eliminar el elemento <vecty:metadata> del SVG
@@ -33,7 +33,7 @@ export function assignInitialVars(initialSVG: string, config: VectyConfig) {
     const [variablesParsed] = parser.parse(templateElementRaw![0] || '')
     if (((variablesParsed as ElementNode).attr.content as Expression).expression) {
       const expressionString = ((variablesParsed as ElementNode).attr.content as Expression).expression
-      const expressionResolved = evaluateExpression(expressionString, vars)
+      const expressionResolved = evaluateExpression(expressionString, vars, currentVariant)
       vars.template = expressionResolved
     }
     // Eliminar el elemento <vecty:variables> del SVG

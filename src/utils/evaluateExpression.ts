@@ -1,4 +1,4 @@
-export const evaluateExpression = (condition: string, context: Record<string, any>) => {
+export const evaluateExpression = (condition: string, context: Record<string, any>, currentVariant?: string) => {
   try {
     // Función auxiliar para extraer variables de la condición
     function extractVariables(expression: string) {
@@ -22,6 +22,8 @@ export const evaluateExpression = (condition: string, context: Record<string, an
       // Si no existe, la establece como undefined
       fullContext[variable] = context.hasOwnProperty(variable) ? context[variable] : undefined;
     }
+    const assignable = new Assignable({ currentVariant, variables: fullContext });
+    fullContext.$assign = assignable.$assign.bind(assignable)
 
     // Creamos una nueva función con el contexto completo
     const fn = new Function(
@@ -33,5 +35,27 @@ export const evaluateExpression = (condition: string, context: Record<string, an
   } catch (error) {
     console.error(`Error evaluando la condición: ${condition}`, error);
     return undefined;
+  }
+}
+
+class Assignable {
+  [key: string]: any;
+
+  constructor({ currentVariant, variables }: { currentVariant?: string, variables?: Record<string, any> }) {
+    this.currentVariant = currentVariant || undefined
+    this.variables = variables || {}
+  }
+
+  $assign(
+    attributes: Record<string, any>,
+    defaultValue: any,
+    currentVariant: string | undefined = this.currentVariant,
+    variables: Record<string, any> = this.variables
+  ) {
+    Object.assign(this, variables);
+    return this.currentVariant
+      ? attributes[currentVariant] || defaultValue
+      : defaultValue
+
   }
 }
