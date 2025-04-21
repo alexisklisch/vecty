@@ -1,6 +1,6 @@
 {
   "name": "vecty",
-  "version": "1.0.0-alpha.5",
+  "version": "1.0.0-alpha.6",
   "description": "Add variables to SVG files.",
   "type": "module",
   "sideEffects": false,
@@ -20,7 +20,7 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "test": "vitest",
-    "temp": "tsx src/temp.ts",
+    "temp": "tsx test/temp.ts",
     "build": "tsc",
     "build:rs": "rspack build && tsc && tsc-alias"
   },
