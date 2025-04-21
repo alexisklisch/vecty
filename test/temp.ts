@@ -1,4 +1,4 @@
-console.time('testix')
+/* console.time('testix')
 import { createVecty } from '@/index'
 import TextExpandedPlugin from '@vecty/expand-plugin'
 import type { VectyConfig } from './vectyTypes'
@@ -87,4 +87,27 @@ const vecty = createVecty(svg, {
 
 writeFile('dox.svg', vecty.svg)
 
-console.timeEnd('testix')
+console.timeEnd('testix') */
+
+import { createVecty } from '../src/index'
+
+const xml = `<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width={$assign({screen: "1920", story: "1080"}, "800")}
+  height={$assign({story: "1920", tabloid: "3085"}, "800")}
+>
+<vecty:variants content={['square', 'story', 'a4', 'tabloid', 'screen']} />
+<vecty:variables content={{
+  color: $assign({square: 'red-pasioooon'}, "green-locooo")
+}}/>
+<text x="10" y="20" font-size="16" fill={$assign({}, "Red")}>{}</text>
+<circle cx="50" cy={$assign({square: 43}, 88888)} r="40" stroke={template.color} stroke-width="2" fill="red"/>
+<rect x="10" y="10" width="30" height="30" fill={template.color}/>
+</svg>`
+const vecty = createVecty(xml, {
+  variables: {
+    text: "Buenos días",
+    String
+  },
+})
+console.log(vecty.svgs())
