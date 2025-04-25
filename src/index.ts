@@ -13,7 +13,7 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
   #variantList: string[] | [undefined] = []
   #currentVariant: string | undefined = undefined
 
-  constructor(private readonly userSVG: string, private config: VectyConfig) {
+  constructor(private readonly userSVG: string, private config: VectyConfig = {}) {
     let svgWithoutComments = userSVG.replace(/\/\*[\s\S]*?\*\//g, '') // Elimina los comentarios
 
     this.#variantList = getVariants(svgWithoutComments) || [undefined]
@@ -139,7 +139,7 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
 
 export default Vecty
 
-export function createVecty<P extends readonly VectyPlugin[]>(svg: string, config: VectyConfig<P>): Vecty<P> {
+export function createVecty<P extends readonly VectyPlugin[]>(svg: string, config?: VectyConfig<P>): Vecty<P> {
   return new Vecty(svg, config as VectyConfig)
 }
 

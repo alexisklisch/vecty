@@ -38,6 +38,7 @@ const base = {
 export default [
   defineConfig({
     ...base,
+    externals: 'commonjs',
     output: {
       path: resolve(__dirname, "dist/cjs"),
       filename: "main.js",
@@ -49,6 +50,7 @@ export default [
   }),
   defineConfig({
     ...base,
+    externals: 'module-import',
     output: {
       path: resolve(__dirname, "dist/mjs"),
       filename: "main.js",
