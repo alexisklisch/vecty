@@ -1,7 +1,7 @@
 {
   "name": "vecty-text-plugin",
-  "version": "0.0.2",
-  "description": "",
+  "version": "0.0.3",
+  "description": "Convert text to shapes with Vecty",
   "sideEffects": false,
   "main": "dist/cjs/main.js",
   "module": "dist/mjs/main.js",
