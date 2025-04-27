@@ -4,6 +4,7 @@ import { parser } from "@/utils/xmlParser"
 import { ElementNode, Expression } from "./utils/xmlParser/commonTypes"
 import type { VectyConfig } from '@/vectyTypes'
 import type { VectyPlugin } from "./types-vecty/plugins"
+import { tagRegex } from "./utils/tagRegex"
 
 class Vecty<P extends readonly VectyPlugin[] = readonly []> {
   public variables: Record<string, any> = {}
@@ -16,7 +17,7 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
     let sourceWithoutComments = userSource.replace(/\/\*[\s\S]*?\*\//g, '') // Elimina los comentarios
 
     this.#variantList = getVariants(sourceWithoutComments) || [undefined]
-    sourceWithoutComments = sourceWithoutComments.replace(/<vecty:variants\b(?:(?:"[^"]*"|'[^']*'|\{[^}]*\}|[^>])*)(\/>|>(?:(?!<\/vecty:variants>).*?)<\/vecty:variants>)/gs, '')
+    sourceWithoutComments = sourceWithoutComments.replace(tagRegex('vecty-variants'), '')
 
     const { cleanSource, cleanVariables } = assignInitialVars(sourceWithoutComments, config, this.#currentVariant)
     this.#tempSource = cleanSource
@@ -134,10 +135,8 @@ export function createVecty<P extends readonly VectyPlugin[]>(source: string, co
   return new Vecty(source, config as VectyConfig)
 }
 
-
-
 const getVariants = (source: string) => {
-  const variantsElementRegex = /<vecty:variants\b(?:(?:"[^"]*"|'[^']*'|\{[^}]*\}|[^>])*)(\/>|>(?:(?!<\/vecty:variants>).*?)<\/vecty:variants>)/gs
+  const variantsElementRegex = tagRegex('vecty-variants')
   const variantsElementRaw = source.match(variantsElementRegex)
 
   if (variantsElementRaw) {
