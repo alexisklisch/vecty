@@ -1,10 +1,10 @@
 import { evaluateExpression } from "@/utils/evaluateExpression"
 import { assignInitialVars } from "@/utils/assignVariables"
 import { parser } from "@/utils/xmlParser"
-import { ElementNode, Expression } from "./utils/xmlParser/commonTypes"
+import { tagRegex } from "@/utils/tagRegex"
+import type { ElementNode, Expression } from "./utils/xmlParser/commonTypes"
 import type { VectyConfig } from '@/vectyTypes'
 import type { VectyPlugin } from "./types-vecty/plugins"
-import { tagRegex } from "./utils/tagRegex"
 
 class Vecty<P extends readonly VectyPlugin[] = readonly []> {
   public variables: Record<string, any> = {}
