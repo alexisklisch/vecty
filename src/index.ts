@@ -76,7 +76,6 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
   #recursiveSVG(currentNode: Record<string, any>, parent?: Record<string, any>, currentPosition?: number) {
     if (typeof currentNode === 'object') {
 
-      // 1) hook onElement
       for (const plugin of this.#plugins) {
         if (plugin.onElement) {
           const r = plugin.onElement(currentNode as ElementNode, { variables: this.variables, evaluateExpression, vectyConfig: this.config, parser })
@@ -94,7 +93,6 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
       if (currentNode.children) {
         const elementAttrs: Record<string, any> = currentNode?.attr || {}
 
-        // Si hay atributos...
         if (elementAttrs) {
           for (const [attrName, attrValue] of Object.entries(elementAttrs)) {
             // ...evaluar en el caso de que sean expresiones
@@ -114,13 +112,7 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
         return
       }
 
-      // Situación, es una expresión
       if (currentNode.expression) {
-        /* parent!.children[currentPosition!] = evaluateExpression(currentNode.expression, this.variables)
-        // Luego de resolver la expresión, vuelve a pasar por el mismo nodo
-        this.#recursiveSVG(parent!.children[currentPosition!], parent, currentPosition)
-        return */
-
         const expressionResult = evaluateExpression(currentNode.expression, this.variables, this.#currentVariant)
         if (typeof expressionResult === 'string') {
           parent!.children[currentPosition!] = { text: expressionResult }
