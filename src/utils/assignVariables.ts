@@ -1,8 +1,8 @@
 import { evaluateExpression } from '@/utils/evaluateExpression'
 import { parser } from './xmlParser'
+import { tagRegex } from './tagRegex'
 import type { VectyConfig } from "@/vectyTypes"
 import type { ElementNode, Expression } from "@/utils/xmlParser/commonTypes"
-import { tagRegex } from './tagRegex'
 
 export function assignInitialVars(initialSource: string, config: VectyConfig, currentVariant: string | undefined) {
   let currentSource = initialSource
