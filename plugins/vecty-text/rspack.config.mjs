@@ -1,10 +1,13 @@
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { defineConfig } from "@rspack/cli";
+import { dependencies } from './package.json' with {type: 'json'}
 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+const externals = Object.keys(dependencies)
 
 const base = {
   entry: "./src/index.ts",
@@ -38,6 +41,7 @@ const base = {
 export default [
   defineConfig({
     ...base,
+    externals,
     output: {
       path: resolve(__dirname, "dist/cjs"),
       filename: "main.js",
@@ -49,6 +53,7 @@ export default [
   }),
   defineConfig({
     ...base,
+    externals,
     output: {
       path: resolve(__dirname, "dist/mjs"),
       filename: "main.js",
