@@ -19,7 +19,6 @@ test('Iniciar desde el bundle', async () => {
   </v>`
   const vecty = createVecty(xml)
   const result = vecty.source
-  console.log('resukt ->',vecty.source)
 
   expect(result).toBe('<v><text>La vida es hermosa</text></v>')
 })

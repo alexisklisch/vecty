@@ -29,7 +29,6 @@ test('ESto no funciona en codilink', () => {
   </v>`
   const vecty = createVecty(xml, {})
   const xmls = vecty.sources()
-  console.log(xmls)
   const result = xmls.every((xml: string) => xml.startsWith('<v'))
 
   expect(result).toBe(true)
