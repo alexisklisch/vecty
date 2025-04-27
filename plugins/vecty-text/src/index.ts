@@ -26,9 +26,9 @@ const TextExpandedPlugin: VectyPlugin<Options> = {
   name: 'TextExpanded',
   onElement(node: ElementNode, { evaluateExpression, variables, vectyConfig, parser }) {
     // intercepta <plugin:expand>
-    if (node.tag === 'plugin:text') {
-      // Verificar si el children incluye <plugin:text:paragraph>
-      const paragraphElements = node.children.filter((el) => (el as ElementNode).tag === 'plugin:text:paragraph' || (el as ElementNode).tag === 'plugin:text:p')
+    if (node.tag === 'plugin-text') {
+      // Verificar si el children incluye <plugin-text:paragraph>
+      const paragraphElements = node.children.filter((el) => (el as ElementNode).tag === 'plugin-text-paragraph' || (el as ElementNode).tag === 'plugin-text-p')
 
       const boxAttributes: Record<string, any> = node.attr || {}
       // Si hay atributos...
