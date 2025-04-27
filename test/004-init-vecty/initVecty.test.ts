@@ -6,19 +6,20 @@ test('Crea vecty sin pasar configuración', () => {
     <text>{$assign({ar:'La vida es hermosa',pt:'El café es feo'}, 'Es una vida y ya.')}</text>
   </v>`
   const vecty = createVecty(xml)
-  const result = vecty.svg
-
+  const result = vecty.source
+  
   expect(result).toBe('<v><text>La vida es hermosa</text></v>')
 })
 
 test('Iniciar desde el bundle', async () => {
   const { createVecty } = await import('../../dist/mjs/main')
-
+  
   const xml = `<v><vecty:variants content={['ar','pt']} />
-    <text>{$assign({ar:'La vida es hermosa',pt:'El café es feo'}, 'Es una vida y ya.')}</text>
+  <text>{$assign({ar:'La vida es hermosa',pt:'El café es feo'}, 'Es una vida y ya.')}</text>
   </v>`
   const vecty = createVecty(xml)
-  const result = vecty.svg
+  const result = vecty.source
+  console.log('resukt ->',vecty.source)
 
   expect(result).toBe('<v><text>La vida es hermosa</text></v>')
 })
