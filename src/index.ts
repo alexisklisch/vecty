@@ -1,26 +1,25 @@
 import { evaluateExpression } from "@/utils/evaluateExpression"
 import { assignInitialVars } from "@/utils/assignVariables"
 import { parser } from "@/utils/xmlParser"
-import type { VectyConfig } from '@/vectyTypes'
-
 import { ElementNode, Expression } from "./utils/xmlParser/commonTypes"
+import type { VectyConfig } from '@/vectyTypes'
 import type { VectyPlugin } from "./types-vecty/plugins"
 
 class Vecty<P extends readonly VectyPlugin[] = readonly []> {
   public variables: Record<string, any> = {}
-  #SVGTemp: string
+  #tempSource: string
   #plugins: VectyPlugin[] = []
   #variantList: string[] | [undefined] = []
   #currentVariant: string | undefined = undefined
 
-  constructor(private readonly userSVG: string, private config: VectyConfig = {}) {
-    let svgWithoutComments = userSVG.replace(/\/\*[\s\S]*?\*\//g, '') // Elimina los comentarios
+  constructor(private readonly userSource: string, private config: VectyConfig = {}) {
+    let sourceWithoutComments = userSource.replace(/\/\*[\s\S]*?\*\//g, '') // Elimina los comentarios
 
-    this.#variantList = getVariants(svgWithoutComments) || [undefined]
-    svgWithoutComments = svgWithoutComments.replace(/<vecty:variants\b(?:(?:"[^"]*"|'[^']*'|\{[^}]*\}|[^>])*)(\/>|>(?:(?!<\/vecty:variants>).*?)<\/vecty:variants>)/gs, '')
+    this.#variantList = getVariants(sourceWithoutComments) || [undefined]
+    sourceWithoutComments = sourceWithoutComments.replace(/<vecty:variants\b(?:(?:"[^"]*"|'[^']*'|\{[^}]*\}|[^>])*)(\/>|>(?:(?!<\/vecty:variants>).*?)<\/vecty:variants>)/gs, '')
 
-    const { cleanSVG, cleanVariables } = assignInitialVars(svgWithoutComments, config, this.#currentVariant)
-    this.#SVGTemp = cleanSVG
+    const { cleanSource, cleanVariables } = assignInitialVars(sourceWithoutComments, config, this.#currentVariant)
+    this.#tempSource = cleanSource
     this.variables = cleanVariables
 
       // 2) registra plugins
@@ -43,9 +42,9 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
 
   get object() {
     this.#currentVariant = this.#variantList[0]
-    const [svgParsed] = parser.parse(this.#SVGTemp)
-    this.#recursiveSVG(svgParsed, undefined, undefined)
-    return [svgParsed]
+    const [sourceParsed] = parser.parse(this.#tempSource)
+    this.#recursiveSource(sourceParsed, undefined, undefined)
+    return [sourceParsed]
   }
 
   objects() {
@@ -53,27 +52,27 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
     for (const variant of this.#variantList) {
       this.#currentVariant = variant
 
-      const [svgParsed] = parser.parse(this.#SVGTemp)
-      this.#recursiveSVG(svgParsed, undefined, undefined)
+      const [sourceParsed] = parser.parse(this.#tempSource)
+      this.#recursiveSource(sourceParsed, undefined, undefined)
 
-      objects.push(svgParsed)
+      objects.push(sourceParsed)
     }
     return objects
   }
 
-  get svg() { return parser.build(this.object) }
+  get source() { return parser.build(this.object) }
 
-  svgs() {
+  sources() {
     const objects = this.objects()
-    const svgs = []
+    const sources = []
     for (const object of objects) {
-      const svg = parser.build([object])
-      svgs.push(svg)
+      const source = parser.build([object])
+      sources.push(source)
     }
-    return svgs
+    return sources
   }
 
-  #recursiveSVG(currentNode: Record<string, any>, parent?: Record<string, any>, currentPosition?: number) {
+  #recursiveSource(currentNode: Record<string, any>, parent?: Record<string, any>, currentPosition?: number) {
     if (typeof currentNode === 'object') {
 
       for (const plugin of this.#plugins) {
@@ -106,7 +105,7 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
         }
 
         for (const [key, value] of Object.entries(currentNode.children)) {
-          this.#recursiveSVG(value as Record<string, any>, currentNode, +key)
+          this.#recursiveSource(value as Record<string, any>, currentNode, +key)
         }
 
         return
@@ -120,7 +119,7 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
           parent!.children[currentPosition!] = expressionResult
         }
 
-        this.#recursiveSVG(parent!.children[currentPosition!], parent, currentPosition)
+        this.#recursiveSource(parent!.children[currentPosition!], parent, currentPosition)
         return
       }
 
@@ -131,15 +130,15 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
 
 export default Vecty
 
-export function createVecty<P extends readonly VectyPlugin[]>(svg: string, config?: VectyConfig<P>): Vecty<P> {
-  return new Vecty(svg, config as VectyConfig)
+export function createVecty<P extends readonly VectyPlugin[]>(source: string, config?: VectyConfig<P>): Vecty<P> {
+  return new Vecty(source, config as VectyConfig)
 }
 
 
 
-const getVariants = (svg: string) => {
+const getVariants = (source: string) => {
   const variantsElementRegex = /<vecty:variants\b(?:(?:"[^"]*"|'[^']*'|\{[^}]*\}|[^>])*)(\/>|>(?:(?!<\/vecty:variants>).*?)<\/vecty:variants>)/gs
-  const variantsElementRaw = svg.match(variantsElementRegex)
+  const variantsElementRaw = source.match(variantsElementRegex)
 
   if (variantsElementRaw) {
     const [variants] = parser.parse(variantsElementRaw![0] || '')
