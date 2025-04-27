@@ -1,12 +1,12 @@
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { defineConfig } from "@rspack/cli";
-import { dependencies } from './package.json' with {type: 'json'}
-
+import pjson from './package.json' with {type: 'json'}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+const { dependencies } = pjson
 const externals = Object.keys(dependencies)
 
 const base = {
