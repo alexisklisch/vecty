@@ -1,35 +1,41 @@
-import type { ElementNode, Expression, Node } from '@/utils/xmlParser/commonTypes'
+import { ExpressionNode, Node, TagNode } from "./parserTypes";
+
 
 export class XMLBuilder {
+  constructor(private nodes: Node[]) {}
+
   /**
-   * Reconstruye el XML a partir del arreglo de nodos.
+   * Builds the XML string from the parsed nodes.
    */
-  public build(nodes: Node[]): string {
-    return nodes.map((node) => this.buildNode(node)).join('');
+  public build(): string {
+    return this.nodes.map((node) => this.buildNode(node)).join('');
   }
 
   /**
-   * Procesa el nodo según su tipo (elemento, texto o expresión).
+   * Process a node based on its type (tag, text, or expression).
    */
   private buildNode(node: Node): string {
-    if ('tag' in node) {
-      return this.buildElement(node as unknown as ElementNode);
-    } else if ('text' in node) {
-      return node.text!;
-    } else if ('expression' in node) {
-      return node.expression!;
+    switch (node.type) {
+      case 'tag':
+        return this.buildTag(node);
+      case 'text':
+        return node.content;
+      case 'expr':
+        return `{${node.content}}`;
+      default:
+        return '';
     }
-    return '';
   }
 
   /**
-   * Reconstruye un elemento XML.
-   * Si el elemento no tiene hijos, se genera una etiqueta autoconclusiva.
+   * Rebuilds an XML tag element.
+   * If the element has no children, generates a self-closing tag.
    */
-  private buildElement(node: ElementNode): string {
+  private buildTag(node: TagNode): string {
     const tag = node.tag;
     const attrs = this.buildAttributes(node.attr);
-    const children = (node.children || []).map((child) => this.buildNode(child)).join('');
+    const children = node.child.map((child) => this.buildNode(child)).join('');
+    
     if (children.length === 0) {
       return `<${tag}${attrs}/>`;
     } else {
@@ -38,17 +44,10 @@ export class XMLBuilder {
   }
 
   /**
-   * Reconstruye los atributos sin aplicar escapes, para conservar
-   * el mismo formato original.
+   * Rebuilds attributes without applying escapes, to preserve
+   * the original format.
    */
-  private buildAttributes(
-    attrs?: { [key: string]: string | Expression }
-  ): string {
-    // Si no vienen attrs o vienen null, devolvemos cadena vacía
-    if (!attrs) {
-      return '';
-    }
-
+  private buildAttributes(attrs: Record<string, string | ExpressionNode>): string {
     const keys = Object.keys(attrs);
     if (keys.length === 0) {
       return '';
@@ -57,11 +56,13 @@ export class XMLBuilder {
     return keys
       .map((key) => {
         const val = attrs[key];
+        
         if (typeof val === "string") {
           return ` ${key}="${val}"`;
-        } else {
-          return ` ${key}={${val.expression}}`;
+        } else if (val.type === 'expr') {
+          return ` ${key}={${val.content}}`;
         }
+        return '';
       })
       .join("");
   }

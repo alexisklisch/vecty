@@ -2,7 +2,7 @@ import { evaluateExpression } from "@/utils/evaluateExpression"
 import { assignInitialVars } from "@/utils/assignVariables"
 import { parser } from "@/utils/xmlParser"
 import { tagRegex } from "@/utils/tagRegex"
-import type { ElementNode, Expression } from "./utils/xmlParser/commonTypes"
+import type { ExpressionNode, Node, TagNode } from "./utils/xmlParser/parserTypes"
 import type { VectyConfig } from '@/vectyTypes'
 import type { VectyPlugin } from "./types-vecty/plugins"
 
@@ -73,24 +73,24 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
     return sources
   }
 
-  #recursiveSource(currentNode: Record<string, any>, parent?: Record<string, any>, currentPosition?: number) {
+  #recursiveSource(currentNode:Node, parent?: TagNode, currentPosition?: number) {
     if (typeof currentNode === 'object') {
 
       for (const plugin of this.#plugins) {
         if (plugin.onElement) {
-          const r = plugin.onElement(currentNode as ElementNode, { variables: this.variables, evaluateExpression, vectyConfig: this.config, parser })
+          const r = plugin.onElement(currentNode as Node, { variables: this.variables, evaluateExpression, vectyConfig: this.config, parser })
           if (r === null) {
             // eliminar nodo
-            if (parent && typeof currentPosition === 'number') parent.children.splice(currentPosition, 1)
+            if (parent && typeof currentPosition === 'number') parent.child.splice(currentPosition, 1)
             return
           }
           if (r !== undefined) {
-            parent!.children[currentPosition!] = r
+            parent!.child[currentPosition!] = r
           }
         }
       }
 
-      if (currentNode.children) {
+      if (currentNode.type === 'tag') {
         const elementAttrs: Record<string, any> = currentNode?.attr || {}
 
         if (elementAttrs) {
@@ -105,22 +105,22 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
           }
         }
 
-        for (const [key, value] of Object.entries(currentNode.children)) {
-          this.#recursiveSource(value as Record<string, any>, currentNode, +key)
+        for (const [key, value] of Object.entries(currentNode.child)) {
+          this.#recursiveSource(value, currentNode, +key)
         }
 
         return
       }
 
-      if (currentNode.expression) {
-        const expressionResult = evaluateExpression(currentNode.expression, this.variables, this.#currentVariant)
+      if (currentNode.type === 'expr') {
+        const expressionResult = evaluateExpression(currentNode.content, this.variables, this.#currentVariant)
         if (typeof expressionResult === 'string') {
-          parent!.children[currentPosition!] = { text: expressionResult }
+          parent!.child[currentPosition!] = { type: 'text', content: expressionResult }
         } else {
-          parent!.children[currentPosition!] = expressionResult
+          parent!.child[currentPosition!] = expressionResult
         }
 
-        this.#recursiveSource(parent!.children[currentPosition!], parent, currentPosition)
+        this.#recursiveSource(parent!.child[currentPosition!], parent, currentPosition)
         return
       }
 
@@ -141,7 +141,10 @@ const getVariants = (source: string) => {
 
   if (variantsElementRaw) {
     const [variants] = parser.parse(variantsElementRaw![0] || '')
-    const expressionResolved = evaluateExpression(((variants as ElementNode)?.attr?.content as Expression)?.expression, {})
+    
+    if (variants.type !== 'tag') return
+    const nodeExpression = variants.attr.content as ExpressionNode
+    const expressionResolved = evaluateExpression(nodeExpression.content, {})
 
     if (!Array.isArray(expressionResolved)) return undefined
     const isStringArray = expressionResolved.some(variation => typeof variation === 'string')

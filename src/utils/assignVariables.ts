@@ -2,7 +2,7 @@ import { evaluateExpression } from '@/utils/evaluateExpression'
 import { parser } from './xmlParser'
 import { tagRegex } from './tagRegex'
 import type { VectyConfig } from "@/vectyTypes"
-import type { ElementNode, Expression } from "@/utils/xmlParser/commonTypes"
+import type { ExpressionNode, Node } from "@/utils/xmlParser/parserTypes"
 
 export function assignInitialVars(initialSource: string, config: VectyConfig, currentVariant: string | undefined) {
   let currentSource = initialSource
@@ -12,34 +12,28 @@ export function assignInitialVars(initialSource: string, config: VectyConfig, cu
   const { variables } = config
   vars.user = variables || {}
 
-
-  //  2. Extraer y asignar variables de metadata
-  const metadataElementRegex = tagRegex('vecty-metadata')
-  const metadataElementRaw = currentSource.match(metadataElementRegex)
-  if (metadataElementRaw) {
-    const [metadataParsed] = parser.parse(metadataElementRaw![0] || '')
-    if (((metadataParsed as ElementNode).attr.content as Expression).expression) {
-      const expressionString = ((metadataParsed as ElementNode).attr.content as Expression).expression
-      const expressionResolved = evaluateExpression(expressionString, vars, currentSource)
-      vars.metadata = expressionResolved
+  // Simplificar en una sola función que itera metadata y variables
+  const tags = ['vecty-variables', 'vecty-metadata']
+  const tagsRegex = tags.map(tag => tagRegex(tag))
+  const tagsRaw = tagsRegex.map(tag => currentSource.match(tag))
+  tagsRaw.map((tag, index) => {
+    if (tag) {
+      const [parsed] = parser.parse(tag[0] || '')
+      if (parsed.type !== 'tag') return null // Si el parsed no es un nodo, retornar
+      const expression = parsed.attr.content as ExpressionNode
+      if (expression.content) {
+        const expressionResolved = evaluateExpression(expression.content, vars, currentVariant)
+        if (tags[index] === 'vecty-variables') {
+          vars.template = expressionResolved
+        } else {
+          vars.metadata = expressionResolved
+        }
+      }
+      // Eliminar el elemento <vecty-variables> del source
+      currentSource = currentSource.replace(tagsRegex[index], '')
     }
-    // Eliminar el elemento <vecty-metadata> del source
-    currentSource = currentSource.replace(metadataElementRegex, '')
-  }
+    return null
+  })
 
-  // 3. Extraer y asignar variables del system
-  const templateElementRegex = tagRegex('vecty-variables')
-  const templateElementRaw = currentSource.match(templateElementRegex)
-  if (templateElementRaw) {
-    const [variablesParsed] = parser.parse(templateElementRaw![0] || '')
-    if (((variablesParsed as ElementNode).attr.content as Expression).expression) {
-      const expressionString = ((variablesParsed as ElementNode).attr.content as Expression).expression
-      const expressionResolved = evaluateExpression(expressionString, vars, currentVariant)
-      vars.template = expressionResolved
-    }
-    // Eliminar el elemento <vecty-variables> del source
-    currentSource = currentSource.replace(templateElementRegex, '')
-  }
-  
   return { cleanSource: currentSource, cleanVariables: vars }
 }

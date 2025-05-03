@@ -1,6 +1,6 @@
 import { evaluateExpression } from "@/utils/evaluateExpression";
 import { VectyConfig } from "@/vectyTypes";
-import { ElementNode, TextNode } from "@/utils/xmlParser/commonTypes";
+import { Node, TextNode } from "@/utils/xmlParser/parserTypes";
 import type Vecty from "@/index";
 import { parser } from "@/utils/xmlParser";
 
@@ -26,7 +26,7 @@ export interface VectyPlugin<C = {}> {
    *   - un nuevo nodo para reemplazarlo
    *   - `undefined` para no tocarlo
    */
-  onElement?(node: ElementNode | TextNode, context: PluginContext): ElementNode | null | undefined;
+  onElement?(node: Node | TextNode, context: PluginContext): Node | null | undefined;
 
   /** Se llama al final, sobre el SVG string */
   afterRender?(svg: string, variables: VectyConfig['variables']): string;
