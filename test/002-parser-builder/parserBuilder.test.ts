@@ -1,26 +1,74 @@
 import { expect, test } from 'vitest'
-import { XMLBuilder } from '@/utils/xmlParser/xmlBuilder'
-import { SimpleXMLParser } from '@/utils/xmlParser/xmlParser';
+import { XMLBuilder } from '../../src/utils/xmlParser/xmlBuilder'
+import { SimpleXMLParser } from '../../src/utils/xmlParser/xmlParser';
 
 test('Dasarma y vuelve a armar un SVG complejo', () => {
 
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="tiny" id="svg-root" width="100%" height="100%" viewBox="0 0 480 360"><SVGTestCase xmlns:testcase="http://www.w3.org/2000/02/svg/testsuite/description/" xmlns="http://www.w3.org/2000/02/svg/testsuite/description/" reviewed="YES" reviewer="CN" owner="SH" desc="tests support for         moveto and closepath path commands" status="accepted" version="$Revision: 1.2 $" testname="$RCSfile: paths-data-08-t.svg,v $"><OperatorScript><Paragraph>
-  Verify the basic capability to handle the 'path' element, and its data attribute (d)
-  in combination with the straight-line path commands.
-  Two pairs of concentric equilateral triangles are drawn using 
-  M and Z.  No L commands are used in this test as they are implied after
-  an M or Z command.  The shapes are identical, with one stroked and
-  one filled.  The fill-mode default of "even-odd" means that 
-  the inner triangle is hollow.  
-        </Paragraph><Paragraph>
-  The rendered picture should match the reference image exactly, except for possible
-  variations in the labelling text (per CSS2 rules).  
-        </Paragraph><Paragraph>
-  The test uses the 'path' element, as well as basic fill (solid primary colors), 
-  stroke (black 1-pixel lines), font-family (Arial) and font-size properties.
-        </Paragraph></OperatorScript></SVGTestCase><title id="test-title">paths-data-08-t</title><desc id="test-desc">Test that viewer has the basic capability to handle the &lt;path&gt; element and data (d) attribute in combination with the moveto and closepath commands - M and Z.</desc><g id="test-body-content"><text font-family="Arial" font-size="24" x="75" y="34">Lines drawn with commands:</text><text font-family="Arial" font-size="24" x="180" y="64">M and Z</text><g transform="scale(1.8)"><path id="Triangle_stroke_MZ" fill="none" stroke="#000000" d="   M   62.00000   56.00000    113.96152  146.00000   10.03848  146.00000    62.00000   56.00000   Z    M   62.00000  71.00000   100.97114  138.50000   23.02886  138.50000   62.00000  71.00000   Z  "/><rect x="60.00000" y="54.00000" width="4" height="4" fill="#00C000" stroke="none"/><rect x="111.96152" y="144.00000" width="4" height="4" fill="#00C000" stroke="none"/><rect x="8.03848" y="144.00000" width="4" height="4" fill="#00C000" stroke="none"/><rect x="60.00000" y="69.00000" width="4" height="4" fill="#00C000" stroke="none"/><rect x="98.97114" y="136.50000" width="4" height="4" fill="#00C000" stroke="none"/><rect x="21.02886" y="136.50000" width="4" height="4" fill="#00C000" stroke="none"/><text font-family="Arial" font-size="12" x="42" y="162">stroked</text><path id="Triangle_fill_MZ" fill="#FF0000" stroke="none" fill-rule="evenodd" d="   M  177.00000   56.00000    228.96152  146.00000   125.03848  146.00000    177.00000   56.00000   Z    M  177.00000  71.00000   215.97114  138.50000   138.02886  138.50000   177.00000  71.00000   Z  "/><rect x="175.00000" y="54.00000" width="4" height="4" fill="#00C000" stroke="none"/><rect x="226.96152" y="144.00000" width="4" height="4" fill="#00C000" stroke="none"/><rect x="123.03848" y="144.00000" width="4" height="4" fill="#00C000" stroke="none"/><rect x="175.00000" y="69.00000" width="4" height="4" fill="#00C000" stroke="none"/><rect x="213.97114" y="136.50000" width="4" height="4" fill="#00C000" stroke="none"/><rect x="136.02886" y="136.50000" width="4" height="4" fill="#00C000" stroke="none"/><text font-family="Arial" font-size="12" x="162" y="162">filled</text></g></g><text id="revision" x="10" y="340" font-size="40" stroke="none" fill="black">$Revision: 1.2 $</text><rect id="test-frame" x="1" y="1" width="478" height="358" fill="none" stroke="#000000"/></svg>`
+      const svg = `<div>
+  {/* Ejemplo de texto simple */}
+  <h1>¡Hola, Mundo!</h1>
+
+  {/* Ejemplo de párrafo */}
+  <p>Este es un párrafo de texto con algo de información.</p>
+
+  {/* Ejemplo de lista desordenada */}
+  <ul>
+    <li>Elemento 1</li>
+    <li>Elemento 2</li>
+    <li>Elemento 3</li>
+  </ul>
+
+  {/* Ejemplo de lista ordenada */}
+  <ol>
+    <li>Primer paso</li>
+    <li>Segundo paso</li>
+    <li>Tercer paso</li>
+  </ol>
+
+  {/* Ejemplo de un enlace */}
+  <a href="https://www.ejemplo.com" target="_blank" rel="noopener noreferrer">
+    Visitar Ejemplo.com
+  </a>
+
+  {/* Ejemplo de una imagen (asegúrate de tener la ruta correcta) */}
+  <img src="/ruta/a/tu/imagen.jpg" alt="Descripción de la imagen" />
+
+  {/* Ejemplo de un input de texto */}
+  <input type="text" placeholder="Escribe algo aquí" />
+
+  {/* Ejemplo de un botón */}
+  <button onClick={() => alert('¡Botón clickeado!')}>Haz clic</button>
+
+  {/* Ejemplo de un div con estilos en línea */}
+  <div style={{ backgroundColor: 'lightblue', padding: '10px', borderRadius: '5px' }}>
+    Este div tiene estilos en línea.
+  </div>
+
+  {/* Ejemplo de un fragmento (para agrupar elementos sin un nodo padre extra) */}
+  <>
+    <p>Este es el primer elemento en el fragmento.</p>
+    <p>Este es el segundo elemento en el fragmento.</p>
+  </>
+
+  {/* Ejemplo de un componente personalizado (asumiendo que ya está definido) */}
+  <MiComponente nombre="Usuario" />
+
+  {/* Ejemplo de renderizado condicional */}
+  {true ? <p>Este texto se muestra porque la condición es verdadera.</p> : <p>Este texto no se muestra.</p>}
+
+  {/* Otro ejemplo de renderizado condicional con && */}
+  {false && <p>Este texto tampoco se muestra.</p>}
+
+  {/* Ejemplo de renderizado de una lista de datos */}
+  <ul>
+    {['Manzana', 'Banana', 'Naranja'].map((fruta, index) => (
+      <li key={index}>{fruta}</li>
+    ))}
+  </ul>
+</div>`
       const parser = new SimpleXMLParser(svg)
       const jsonStructure = parser.parse()
+      console.log('JSON -> ', JSON.stringify(jsonStructure, null, 2))
 
 
       const builder = new XMLBuilder();
