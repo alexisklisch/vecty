@@ -1,10 +1,10 @@
 import { XMLBuilder } from "@/utils/xmlParser/xmlBuilder";
-import { SimpleXMLParser } from "@/utils/xmlParser/xmlParser";
+import { XMLParser } from "@/utils/xmlParser/xmlParser";
 import type { Node } from '@/utils/xmlParser/commonTypes'
 
 export const parser = {
-  parse: (svg: string) => {
-    const parser = new SimpleXMLParser(svg)
+  parse: (xml: string) => {
+    const parser = new XMLParser(xml)
     return parser.parse()
   },
   build: (node: Node[]) => {

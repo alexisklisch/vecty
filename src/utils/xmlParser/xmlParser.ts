@@ -1,14 +1,60 @@
-import type { ElementNode, Expression, Node } from '@/utils/xmlParser/commonTypes'
+type TupleToUnion<T extends any[]> = T[number]
 
-export class SimpleXMLParser {
+type ExpressionNode = {
+  type: 'expr'
+  content: string
+}
+export type TextNode = {
+  type: 'text',
+  content: string
+}
+export type TagNode = {
+  type: 'tag'
+  tag: string
+  attr: Record<string, string | ExpressionNode>
+  child: Node[]
+}
+
+type Node = TupleToUnion<[ExpressionNode, TextNode, TagNode]>
+
+const paragraph: Node = {
+  type: 'tag',
+  tag: 'full-text',
+  attr: {},
+  child: [
+    {
+      type: 'tag',
+      tag: 'paragraph',
+      attr: {
+        nuevo: {type: "expr", content: 'template.size'},
+        "texto-uno": "Prueba 1",
+      },
+      child: [
+        {
+          type: 'text',
+          content: 'La vida es una '
+        },
+        {
+          type: 'expr',
+          content: 'template.age > 16 ? "moneda" : "lentaja"'
+        },
+        {
+          type: 'text',
+          content: '.'
+        }
+      ]
+    }
+  ]
+}
+
+export class XMLParser {
   private pos = 0
-
   constructor(private xml: string) { }
-
+  
   public parse(): Node[] {
     return this.parseNodes()
   }
-
+  
   private parseNodes(): Node[] {
     const nodes: Node[] = []
     while (this.pos < this.xml.length) {
@@ -17,48 +63,51 @@ export class SimpleXMLParser {
         if (this.xml.startsWith("</", this.pos)) break
         nodes.push(this.parseElement())
       } else if (char === "{") {
-        // Se parsea un bloque de código interno y se guarda como expresión
-        const code = this.parseCodeBlock().trim()
-        nodes.push({ expression: code })
+        // Parse expression block
+        const expr = this.parseCodeBlock().trim()
+        nodes.push({ type: 'expr', content: expr })
       } else {
         const text = this.readText()
-        if (text.trim().length > 0) nodes.push({ text })
+        if (text.trim().length > 0) nodes.push({ type: 'text', content: text })
       }
     }
     return nodes
   }
-
-  private parseElement(): ElementNode {
-    this.pos++ // Salta '<'
+  
+  private parseElement(): TagNode {
+    this.pos++ // Skip '<'
     const tag = this.readUntil(/[\s>/]/)
     this.skipWhitespace()
     const attr = this.parseAttributes()
     this.skipWhitespace()
-
-    let children: Node[] = []
+    
+    let child: Node[] = []
     if (this.xml.startsWith("/>", this.pos)) {
       this.pos += 2
     } else if (this.xml[this.pos] === ">") {
-      this.pos++ // Salta '>'
-      children = this.parseNodes()
+      this.pos++ // Skip '>'
+      child = this.parseNodes()
       if (this.xml.startsWith("</", this.pos)) {
-        this.pos += 2 // Salta '</'
+        this.pos += 2 // Skip '</'
         this.readUntil(">")
-        this.pos++ // Salta '>'
+        this.pos++ // Skip '>'
       }
     }
-    return { tag, attr, children }
+    
+    return { type: 'tag', tag, attr, child }
   }
-
-  private parseAttributes(): { [key: string]: string | Expression } {
-    const attrs: { [key: string]: string | Expression } = {}
+  
+  private parseAttributes(): Record<string, string | ExpressionNode> {
+    const attrs: Record<string, string | ExpressionNode> = {}
     while (this.pos < this.xml.length) {
       this.skipWhitespace()
       if (this.xml[this.pos] === ">" || this.xml.startsWith("/>", this.pos)) break
+      
       const attrName = this.readUntil(/[\s=]/)
       this.skipWhitespace()
+      
       if (this.xml[this.pos] === "=") {
-        this.pos++ // Salta '='
+        this.pos++ // Skip '='
         this.skipWhitespace()
         const attrValue = this.parseAttributeValue()
         attrs[attrName] = attrValue
@@ -68,36 +117,36 @@ export class SimpleXMLParser {
     }
     return attrs
   }
-
-  private parseAttributeValue(): string | Expression {
+  
+  private parseAttributeValue(): string | ExpressionNode {
     const current = this.xml[this.pos]
     if (current === '"' || current === "'") {
-      this.pos++ // Salta la comilla de apertura
+      this.pos++ // Skip opening quote
       const value = this.readUntil(current)
-      this.pos++ // Salta la comilla de cierre
+      this.pos++ // Skip closing quote
       return value
     } else if (current === "`") {
-      // Nuevo caso: backticks → template literal
-      this.pos++; // salta el `
-      const value = this.readUntil("`");
-      this.pos++; // salta el `
-      // Devolvemos una Expression que ya incluye los backticks
-      return { expression: `\`${value}\`` };
+      // Template literal case
+      this.pos++ // Skip opening backtick
+      const value = this.readUntil("`")
+      this.pos++ // Skip closing backtick
+      return { type: 'expr', content: `\`${value}\`` }
     } else if (current === "{") {
       const code = this.parseCodeBlock().trim()
-      return { expression: code }
+      return { type: 'expr', content: code }
     }
     return ""
   }
-
+  
   /**
-   * Parsea un bloque de código delimitado por '{' y '}'.
-   * Se gestiona la profundidad para soportar anidamientos correctamente.
+   * Parse a code block delimited by '{' and '}'.
+   * Manages depth to support proper nesting.
    */
   private parseCodeBlock(): string {
-    this.pos++ // Salta '{'
+    this.pos++ // Skip '{'
     const start = this.pos
     let depth = 1
+    
     while (this.pos < this.xml.length) {
       const char = this.xml[this.pos]
       if (char === "{") {
@@ -106,15 +155,16 @@ export class SimpleXMLParser {
         depth--
         if (depth === 0) {
           const code = this.xml.substring(start, this.pos)
-          this.pos++ // Salta '}'
+          this.pos++ // Skip '}'
           return code
         }
       }
       this.pos++
     }
+    
     return this.xml.substring(start, this.pos)
   }
-
+  
   private readText(): string {
     const start = this.pos
     while (this.pos < this.xml.length && !["<", "{"].includes(this.xml[this.pos])) {
@@ -122,7 +172,7 @@ export class SimpleXMLParser {
     }
     return this.xml.substring(start, this.pos)
   }
-
+  
   private readUntil(delimiter: string | RegExp): string {
     const start = this.pos
     while (this.pos < this.xml.length && !this.matches(delimiter)) {
@@ -130,14 +180,14 @@ export class SimpleXMLParser {
     }
     return this.xml.substring(start, this.pos)
   }
-
+  
   private matches(delimiter: string | RegExp): boolean {
     if (typeof delimiter === "string") {
       return this.xml.startsWith(delimiter, this.pos)
     }
     return delimiter.test(this.xml[this.pos])
   }
-
+  
   private skipWhitespace(): void {
     while (this.pos < this.xml.length && /\s/.test(this.xml[this.pos])) {
       this.pos++
