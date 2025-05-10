@@ -4,12 +4,10 @@ import { parser } from "@/utils/xmlParser"
 import { tagRegex } from "@/utils/tagRegex"
 import type { ExpressionNode, Node, TagNode } from "./utils/xmlParser/parserTypes"
 import type { VectyConfig } from '@/vectyTypes'
-import type { VectyPlugin } from "./types-vecty/plugins"
 
-class Vecty<P extends readonly VectyPlugin[] = readonly []> {
+class Vecty {
   public variables: Record<string, any> = {}
   #tempSource: string
-  #plugins: VectyPlugin[] = []
   #variantList: string[] | [undefined] = []
   #currentVariant: string | undefined = undefined
 
@@ -22,23 +20,6 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
     const { cleanSource, cleanVariables } = assignInitialVars(sourceWithoutComments, config, this.#currentVariant)
     this.#tempSource = cleanSource
     this.variables = cleanVariables
-
-      // 2) registra plugins
-      ; (config.plugins || []).forEach(p => this.#use(p))
-
-
-    // 3) hook init de cada plugin
-    for (const plugin of this.#plugins) {
-      plugin.init?.(this, this.variables)
-    }
-  }
-
-  /** Registra un plugin (antes de render) */
-  #use(plugin: VectyPlugin) {
-    if (this.#plugins.find(p => p.name === plugin.name)) {
-      throw new Error(`Plugin '${plugin.name}' ya registrado`)
-    }
-    this.#plugins.push(plugin)
   }
 
   get object() {
@@ -75,21 +56,6 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
 
   #recursiveSource(currentNode:Node, parent?: TagNode, currentPosition?: number) {
     if (typeof currentNode === 'object') {
-
-      for (const plugin of this.#plugins) {
-        if (plugin.onElement) {
-          const r = plugin.onElement(currentNode as Node, { variables: this.variables, evaluateExpression, vectyConfig: this.config, parser })
-          if (r === null) {
-            // eliminar nodo
-            if (parent && typeof currentPosition === 'number') parent.child.splice(currentPosition, 1)
-            return
-          }
-          if (r !== undefined) {
-            parent!.child[currentPosition!] = r
-          }
-        }
-      }
-
       if (currentNode.type === 'tag') {
         const elementAttrs: Record<string, any> = currentNode?.attr || {}
 
@@ -123,16 +89,14 @@ class Vecty<P extends readonly VectyPlugin[] = readonly []> {
         this.#recursiveSource(parent!.child[currentPosition!], parent, currentPosition)
         return
       }
-
     }
   }
-
 }
 
 export default Vecty
 
-export function createVecty<P extends readonly VectyPlugin[]>(source: string, config?: VectyConfig<P>): Vecty<P> {
-  return new Vecty(source, config as VectyConfig)
+export function createVecty(source: string, config?: VectyConfig): Vecty {
+  return new Vecty(source, config)
 }
 
 const getVariants = (source: string) => {
