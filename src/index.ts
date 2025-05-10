@@ -95,10 +95,6 @@ class Vecty {
 
 export default Vecty
 
-export function createVecty(source: string, config?: VectyConfig): Vecty {
-  return new Vecty(source, config)
-}
-
 const getVariants = (source: string) => {
   const variantsElementRegex = tagRegex('vecty-variants')
   const variantsElementRaw = source.match(variantsElementRegex)

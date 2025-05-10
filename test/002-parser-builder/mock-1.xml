@@ -1,0 +1,813 @@
+<root>
+  <config enabled="true" retries={3} timeout={`1000 * 60`}>
+    <settings>
+      <option name="A" value="1" />
+      <option name="B" value="2" />
+      <option name="C" value={computeValue()} />
+    </settings>
+    <paths>
+      {userPaths.map(p => <path value={p} />)}
+    </paths>
+  </config>
+
+  <data>
+    <records>
+      <record id="1">
+        <field name="name">John</field>
+        <field name="email">{getEmail(1)}</field>
+        <field name="active">true</field>
+      </record>
+      <record id="2">
+        <field name="name">Jane</field>
+        <field name="email">{getEmail(2)}</field>
+        <field name="active">false</field>
+      </record>
+      <record id="3">
+        <field name="name">Alice</field>
+        <field name="email">{getEmail(3)}</field>
+        <field name="active">true</field>
+      </record>
+      <!-- Repetimos más registros para crecer el XML -->
+      <!-- Empieza bloque repetido -->
+      ${Array.from({ length: 100 }).map((_, i) => `
+      <record id="${i + 4}">
+        <field name="name">User${i}</field>
+        <field name="email">{getEmail(${i + 4})}</field>
+        <field name="active">${i % 2 === 0}</field>
+      </record>
+      `).join('\n')}
+      <!-- Termina bloque repetido -->
+    </records>
+  </data>
+
+  <ui>
+    <window title="Main">
+      <panel id="left">
+        <button text="Click me" onClick={handleClick} />
+        <input type="text" value={userInput} />
+      </panel>
+      <panel id="right">
+        <list>
+          {items.map(item => <listItem>{item.label}</listItem>)}
+        </list>
+      </panel>
+    </window>
+  </ui>
+    <config enabled="true" retries={3} timeout={`1000 * 60`}>
+    <settings>
+      <option name="A" value="1" />
+      <option name="B" value="2" />
+      <option name="C" value={computeValue()} />
+    </settings>
+    <paths>
+      {userPaths.map(p => <path value={p} />)}
+    </paths>
+  </config>
+
+  <data>
+    <records>
+      <record id="1">
+        <field name="name">John</field>
+        <field name="email">{getEmail(1)}</field>
+        <field name="active">true</field>
+      </record>
+      <record id="2">
+        <field name="name">Jane</field>
+        <field name="email">{getEmail(2)}</field>
+        <field name="active">false</field>
+      </record>
+      <record id="3">
+        <field name="name">Alice</field>
+        <field name="email">{getEmail(3)}</field>
+        <field name="active">true</field>
+      </record>
+      <!-- Repetimos más registros para crecer el XML -->
+      <!-- Empieza bloque repetido -->
+      ${Array.from({ length: 100 }).map((_, i) => `
+      <record id="${i + 4}">
+        <field name="name">User${i}</field>
+        <field name="email">{getEmail(${i + 4})}</field>
+        <field name="active">${i % 2 === 0}</field>
+      </record>
+      `).join('\n')}
+      <!-- Termina bloque repetido -->
+    </records>
+  </data>
+
+  <ui>
+    <window title="Main">
+      <panel id="left">
+        <button text="Click me" onClick={handleClick} />
+        <input type="text" value={userInput} />
+      </panel>
+      <panel id="right">
+        <list>
+          {items.map(item => <listItem>{item.label}</listItem>)}
+        </list>
+      </panel>
+    </window>
+  </ui>
+    <config enabled="true" retries={3} timeout={`1000 * 60`}>
+    <settings>
+      <option name="A" value="1" />
+      <option name="B" value="2" />
+      <option name="C" value={computeValue()} />
+    </settings>
+    <paths>
+      {userPaths.map(p => <path value={p} />)}
+    </paths>
+  </config>
+
+  <data>
+    <records>
+      <record id="1">
+        <field name="name">John</field>
+        <field name="email">{getEmail(1)}</field>
+        <field name="active">true</field>
+      </record>
+      <record id="2">
+        <field name="name">Jane</field>
+        <field name="email">{getEmail(2)}</field>
+        <field name="active">false</field>
+      </record>
+      <record id="3">
+        <field name="name">Alice</field>
+        <field name="email">{getEmail(3)}</field>
+        <field name="active">true</field>
+      </record>
+      <!-- Repetimos más registros para crecer el XML -->
+      <!-- Empieza bloque repetido -->
+      ${Array.from({ length: 100 }).map((_, i) => `
+      <record id="${i + 4}">
+        <field name="name">User${i}</field>
+        <field name="email">{getEmail(${i + 4})}</field>
+        <field name="active">${i % 2 === 0}</field>
+      </record>
+      `).join('\n')}
+      <!-- Termina bloque repetido -->
+    </records>
+  </data>
+
+  <ui>
+    <window title="Main">
+      <panel id="left">
+        <button text="Click me" onClick={handleClick} />
+        <input type="text" value={userInput} />
+      </panel>
+      <panel id="right">
+        <list>
+          {items.map(item => <listItem>{item.label}</listItem>)}
+        </list>
+      </panel>
+    </window>
+  </ui>
+    <config enabled="true" retries={3} timeout={`1000 * 60`}>
+    <settings>
+      <option name="A" value="1" />
+      <option name="B" value="2" />
+      <option name="C" value={computeValue()} />
+    </settings>
+    <paths>
+      {userPaths.map(p => <path value={p} />)}
+    </paths>
+  </config>
+
+  <data>
+    <records>
+      <record id="1">
+        <field name="name">John</field>
+        <field name="email">{getEmail(1)}</field>
+        <field name="active">true</field>
+      </record>
+      <record id="2">
+        <field name="name">Jane</field>
+        <field name="email">{getEmail(2)}</field>
+        <field name="active">false</field>
+      </record>
+      <record id="3">
+        <field name="name">Alice</field>
+        <field name="email">{getEmail(3)}</field>
+        <field name="active">true</field>
+      </record>
+      <!-- Repetimos más registros para crecer el XML -->
+      <!-- Empieza bloque repetido -->
+      ${Array.from({ length: 100 }).map((_, i) => `
+      <record id="${i + 4}">
+        <field name="name">User${i}</field>
+        <field name="email">{getEmail(${i + 4})}</field>
+        <field name="active">${i % 2 === 0}</field>
+      </record>
+      `).join('\n')}
+      <!-- Termina bloque repetido -->
+    </records>
+  </data>
+
+  <ui>
+    <window title="Main">
+      <panel id="left">
+        <button text="Click me" onClick={handleClick} />
+        <input type="text" value={userInput} />
+      </panel>
+      <panel id="right">
+        <list>
+          {items.map(item => <listItem>{item.label}</listItem>)}
+        </list>
+      </panel>
+    </window>
+  </ui>
+    <config enabled="true" retries={3} timeout={`1000 * 60`}>
+    <settings>
+      <option name="A" value="1" />
+      <option name="B" value="2" />
+      <option name="C" value={computeValue()} />
+    </settings>
+    <paths>
+      {userPaths.map(p => <path value={p} />)}
+    </paths>
+  </config>
+
+  <data>
+    <records>
+      <record id="1">
+        <field name="name">John</field>
+        <field name="email">{getEmail(1)}</field>
+        <field name="active">true</field>
+      </record>
+      <record id="2">
+        <field name="name">Jane</field>
+        <field name="email">{getEmail(2)}</field>
+        <field name="active">false</field>
+      </record>
+      <record id="3">
+        <field name="name">Alice</field>
+        <field name="email">{getEmail(3)}</field>
+        <field name="active">true</field>
+      </record>
+      <!-- Repetimos más registros para crecer el XML -->
+      <!-- Empieza bloque repetido -->
+      ${Array.from({ length: 100 }).map((_, i) => `
+      <record id="${i + 4}">
+        <field name="name">User${i}</field>
+        <field name="email">{getEmail(${i + 4})}</field>
+        <field name="active">${i % 2 === 0}</field>
+      </record>
+      `).join('\n')}
+      <!-- Termina bloque repetido -->
+    </records>
+  </data>
+
+  <ui>
+    <window title="Main">
+      <panel id="left">
+        <button text="Click me" onClick={handleClick} />
+        <input type="text" value={userInput} />
+      </panel>
+      <panel id="right">
+        <list>
+          {items.map(item => <listItem>{item.label}</listItem>)}
+        </list>
+      </panel>
+    </window>
+  </ui>
+    <config enabled="true" retries={3} timeout={`1000 * 60`}>
+    <settings>
+      <option name="A" value="1" />
+      <option name="B" value="2" />
+      <option name="C" value={computeValue()} />
+    </settings>
+    <paths>
+      {userPaths.map(p => <path value={p} />)}
+    </paths>
+  </config>
+
+  <data>
+    <records>
+      <record id="1">
+        <field name="name">John</field>
+        <field name="email">{getEmail(1)}</field>
+        <field name="active">true</field>
+      </record>
+      <record id="2">
+        <field name="name">Jane</field>
+        <field name="email">{getEmail(2)}</field>
+        <field name="active">false</field>
+      </record>
+      <record id="3">
+        <field name="name">Alice</field>
+        <field name="email">{getEmail(3)}</field>
+        <field name="active">true</field>
+      </record>
+      <!-- Repetimos más registros para crecer el XML -->
+      <!-- Empieza bloque repetido -->
+      ${Array.from({ length: 100 }).map((_, i) => `
+      <record id="${i + 4}">
+        <field name="name">User${i}</field>
+        <field name="email">{getEmail(${i + 4})}</field>
+        <field name="active">${i % 2 === 0}</field>
+      </record>
+      `).join('\n')}
+      <!-- Termina bloque repetido -->
+    </records>
+  </data>
+
+  <ui>
+    <window title="Main">
+      <panel id="left">
+        <button text="Click me" onClick={handleClick} />
+        <input type="text" value={userInput} />
+      </panel>
+      <panel id="right">
+        <list>
+          {items.map(item => <listItem>{item.label}</listItem>)}
+        </list>
+      </panel>
+    </window>
+  </ui>
+    <config enabled="true" retries={3} timeout={`1000 * 60`}>
+    <settings>
+      <option name="A" value="1" />
+      <option name="B" value="2" />
+      <option name="C" value={computeValue()} />
+    </settings>
+    <paths>
+      {userPaths.map(p => <path value={p} />)}
+    </paths>
+  </config>
+
+  <data>
+    <records>
+      <record id="1">
+        <field name="name">John</field>
+        <field name="email">{getEmail(1)}</field>
+        <field name="active">true</field>
+      </record>
+      <record id="2">
+        <field name="name">Jane</field>
+        <field name="email">{getEmail(2)}</field>
+        <field name="active">false</field>
+      </record>
+      <record id="3">
+        <field name="name">Alice</field>
+        <field name="email">{getEmail(3)}</field>
+        <field name="active">true</field>
+      </record>
+      <!-- Repetimos más registros para crecer el XML -->
+      <!-- Empieza bloque repetido -->
+      ${Array.from({ length: 100 }).map((_, i) => `
+      <record id="${i + 4}">
+        <field name="name">User${i}</field>
+        <field name="email">{getEmail(${i + 4})}</field>
+        <field name="active">${i % 2 === 0}</field>
+      </record>
+      `).join('\n')}
+      <!-- Termina bloque repetido -->
+    </records>
+  </data>
+
+  <ui>
+    <window title="Main">
+      <panel id="left">
+        <button text="Click me" onClick={handleClick} />
+        <input type="text" value={userInput} />
+      </panel>
+      <panel id="right">
+        <list>
+          {items.map(item => <listItem>{item.label}</listItem>)}
+        </list>
+      </panel>
+    </window>
+  </ui>
+    <config enabled="true" retries={3} timeout={`1000 * 60`}>
+    <settings>
+      <option name="A" value="1" />
+      <option name="B" value="2" />
+      <option name="C" value={computeValue()} />
+    </settings>
+    <paths>
+      {userPaths.map(p => <path value={p} />)}
+    </paths>
+  </config>
+
+  <data>
+    <records>
+      <record id="1">
+        <field name="name">John</field>
+        <field name="email">{getEmail(1)}</field>
+        <field name="active">true</field>
+      </record>
+      <record id="2">
+        <field name="name">Jane</field>
+        <field name="email">{getEmail(2)}</field>
+        <field name="active">false</field>
+      </record>
+      <record id="3">
+        <field name="name">Alice</field>
+        <field name="email">{getEmail(3)}</field>
+        <field name="active">true</field>
+      </record>
+      <!-- Repetimos más registros para crecer el XML -->
+      <!-- Empieza bloque repetido -->
+      ${Array.from({ length: 100 }).map((_, i) => `
+      <record id="${i + 4}">
+        <field name="name">User${i}</field>
+        <field name="email">{getEmail(${i + 4})}</field>
+        <field name="active">${i % 2 === 0}</field>
+      </record>
+      `).join('\n')}
+      <!-- Termina bloque repetido -->
+    </records>
+  </data>
+
+  <ui>
+    <window title="Main">
+      <panel id="left">
+        <button text="Click me" onClick={handleClick} />
+        <input type="text" value={userInput} />
+      </panel>
+      <panel id="right">
+        <list>
+          {items.map(item => <listItem>{item.label}</listItem>)}
+        </list>
+      </panel>
+    </window>
+  </ui>
+    <config enabled="true" retries={3} timeout={`1000 * 60`}>
+    <settings>
+      <option name="A" value="1" />
+      <option name="B" value="2" />
+      <option name="C" value={computeValue()} />
+    </settings>
+    <paths>
+      {userPaths.map(p => <path value={p} />)}
+    </paths>
+  </config>
+
+  <data>
+    <records>
+      <record id="1">
+        <field name="name">John</field>
+        <field name="email">{getEmail(1)}</field>
+        <field name="active">true</field>
+      </record>
+      <record id="2">
+        <field name="name">Jane</field>
+        <field name="email">{getEmail(2)}</field>
+        <field name="active">false</field>
+      </record>
+      <record id="3">
+        <field name="name">Alice</field>
+        <field name="email">{getEmail(3)}</field>
+        <field name="active">true</field>
+      </record>
+      <!-- Repetimos más registros para crecer el XML -->
+      <!-- Empieza bloque repetido -->
+      ${Array.from({ length: 100 }).map((_, i) => `
+      <record id="${i + 4}">
+        <field name="name">User${i}</field>
+        <field name="email">{getEmail(${i + 4})}</field>
+        <field name="active">${i % 2 === 0}</field>
+      </record>
+      `).join('\n')}
+      <!-- Termina bloque repetido -->
+    </records>
+  </data>
+
+  <ui>
+    <window title="Main">
+      <panel id="left">
+        <button text="Click me" onClick={handleClick} />
+        <input type="text" value={userInput} />
+      </panel>
+      <panel id="right">
+        <list>
+          {items.map(item => <listItem>{item.label}</listItem>)}
+        </list>
+      </panel>
+    </window>
+  </ui>
+    <config enabled="true" retries={3} timeout={`1000 * 60`}>
+    <settings>
+      <option name="A" value="1" />
+      <option name="B" value="2" />
+      <option name="C" value={computeValue()} />
+    </settings>
+    <paths>
+      {userPaths.map(p => <path value={p} />)}
+    </paths>
+  </config>
+
+  <data>
+    <records>
+      <record id="1">
+        <field name="name">John</field>
+        <field name="email">{getEmail(1)}</field>
+        <field name="active">true</field>
+      </record>
+      <record id="2">
+        <field name="name">Jane</field>
+        <field name="email">{getEmail(2)}</field>
+        <field name="active">false</field>
+      </record>
+      <record id="3">
+        <field name="name">Alice</field>
+        <field name="email">{getEmail(3)}</field>
+        <field name="active">true</field>
+      </record>
+      <!-- Repetimos más registros para crecer el XML -->
+      <!-- Empieza bloque repetido -->
+      ${Array.from({ length: 100 }).map((_, i) => `
+      <record id="${i + 4}">
+        <field name="name">User${i}</field>
+        <field name="email">{getEmail(${i + 4})}</field>
+        <field name="active">${i % 2 === 0}</field>
+      </record>
+      `).join('\n')}
+      <!-- Termina bloque repetido -->
+    </records>
+  </data>
+
+  <ui>
+    <window title="Main">
+      <panel id="left">
+        <button text="Click me" onClick={handleClick} />
+        <input type="text" value={userInput} />
+      </panel>
+      <panel id="right">
+        <list>
+          {items.map(item => <listItem>{item.label}</listItem>)}
+        </list>
+      </panel>
+    </window>
+  </ui>
+  v
+    <config enabled="true" retries={3} timeout={`1000 * 60`}>
+    <settings>
+      <option name="A" value="1" />
+      <option name="B" value="2" />
+      <option name="C" value={computeValue()} />
+    </settings>
+    <paths>
+      {userPaths.map(p => <path value={p} />)}
+    </paths>
+  </config>
+
+  <data>
+    <records>
+      <record id="1">
+        <field name="name">John</field>
+        <field name="email">{getEmail(1)}</field>
+        <field name="active">true</field>
+      </record>
+      <record id="2">
+        <field name="name">Jane</field>
+        <field name="email">{getEmail(2)}</field>
+        <field name="active">false</field>
+      </record>
+      <record id="3">
+        <field name="name">Alice</field>
+        <field name="email">{getEmail(3)}</field>
+        <field name="active">true</field>
+      </record>
+      <!-- Repetimos más registros para crecer el XML -->
+      <!-- Empieza bloque repetido -->
+      ${Array.from({ length: 100 }).map((_, i) => `
+      <record id="${i + 4}">
+        <field name="name">User${i}</field>
+        <field name="email">{getEmail(${i + 4})}</field>
+        <field name="active">${i % 2 === 0}</field>
+      </record>
+      `).join('\n')}
+      <!-- Termina bloque repetido -->
+    </records>
+  </data>
+
+  <ui>
+    <window title="Main">
+      <panel id="left">
+        <button text="Click me" onClick={handleClick} />
+        <input type="text" value={userInput} />
+      </panel>
+      <panel id="right">
+        <list>
+          {items.map(item => <listItem>{item.label}</listItem>)}
+        </list>
+      </panel>
+    </window>
+  </ui>
+    <config enabled="true" retries={3} timeout={`1000 * 60`}>
+    <settings>
+      <option name="A" value="1" />
+      <option name="B" value="2" />
+      <option name="C" value={computeValue()} />
+    </settings>
+    <paths>
+      {userPaths.map(p => <path value={p} />)}
+    </paths>
+  </config>
+
+  <data>
+    <records>
+      <record id="1">
+        <field name="name">John</field>
+        <field name="email">{getEmail(1)}</field>
+        <field name="active">true</field>
+      </record>
+      <record id="2">
+        <field name="name">Jane</field>
+        <field name="email">{getEmail(2)}</field>
+        <field name="active">false</field>
+      </record>
+      <record id="3">
+        <field name="name">Alice</field>
+        <field name="email">{getEmail(3)}</field>
+        <field name="active">true</field>
+      </record>
+      <!-- Repetimos más registros para crecer el XML -->
+      <!-- Empieza bloque repetido -->
+      ${Array.from({ length: 100 }).map((_, i) => `
+      <record id="${i + 4}">
+        <field name="name">User${i}</field>
+        <field name="email">{getEmail(${i + 4})}</field>
+        <field name="active">${i % 2 === 0}</field>
+      </record>
+      `).join('\n')}
+      <!-- Termina bloque repetido -->
+    </records>
+  </data>
+
+  <ui>
+    <window title="Main">
+      <panel id="left">
+        <button text="Click me" onClick={handleClick} />
+        <input type="text" value={userInput} />
+      </panel>
+      <panel id="right">
+        <list>
+          {items.map(item => <listItem>{item.label}</listItem>)}
+        </list>
+      </panel>
+    </window>
+  </ui>
+    <config enabled="true" retries={3} timeout={`1000 * 60`}>
+    <settings>
+      <option name="A" value="1" />
+      <option name="B" value="2" />
+      <option name="C" value={computeValue()} />
+    </settings>
+    <paths>
+      {userPaths.map(p => <path value={p} />)}
+    </paths>
+  </config>
+
+  <data>
+    <records>
+      <record id="1">
+        <field name="name">John</field>
+        <field name="email">{getEmail(1)}</field>
+        <field name="active">true</field>
+      </record>
+      <record id="2">
+        <field name="name">Jane</field>
+        <field name="email">{getEmail(2)}</field>
+        <field name="active">false</field>
+      </record>
+      <record id="3">
+        <field name="name">Alice</field>
+        <field name="email">{getEmail(3)}</field>
+        <field name="active">true</field>
+      </record>
+      <!-- Repetimos más registros para crecer el XML -->
+      <!-- Empieza bloque repetido -->
+      ${Array.from({ length: 100 }).map((_, i) => `
+      <record id="${i + 4}">
+        <field name="name">User${i}</field>
+        <field name="email">{getEmail(${i + 4})}</field>
+        <field name="active">${i % 2 === 0}</field>
+      </record>
+      `).join('\n')}
+      <!-- Termina bloque repetido -->
+    </records>
+  </data>
+
+  <ui>
+    <window title="Main">
+      <panel id="left">
+        <button text="Click me" onClick={handleClick} />
+        <input type="text" value={userInput} />
+      </panel>
+      <panel id="right">
+        <list>
+          {items.map(item => <listItem>{item.label}</listItem>)}
+        </list>
+      </panel>
+    </window>
+  </ui>
+    <config enabled="true" retries={3} timeout={`1000 * 60`}>
+    <settings>
+      <option name="A" value="1" />
+      <option name="B" value="2" />
+      <option name="C" value={computeValue()} />
+    </settings>
+    <paths>
+      {userPaths.map(p => <path value={p} />)}
+    </paths>
+  </config>
+
+  <data>
+    <records>
+      <record id="1">
+        <field name="name">John</field>
+        <field name="email">{getEmail(1)}</field>
+        <field name="active">true</field>
+      </record>
+      <record id="2">
+        <field name="name">Jane</field>
+        <field name="email">{getEmail(2)}</field>
+        <field name="active">false</field>
+      </record>
+      <record id="3">
+        <field name="name">Alice</field>
+        <field name="email">{getEmail(3)}</field>
+        <field name="active">true</field>
+      </record>
+      <!-- Repetimos más registros para crecer el XML -->
+      <!-- Empieza bloque repetido -->
+      ${Array.from({ length: 100 }).map((_, i) => `
+      <record id="${i + 4}">
+        <field name="name">User${i}</field>
+        <field name="email">{getEmail(${i + 4})}</field>
+        <field name="active">${i % 2 === 0}</field>
+      </record>
+      `).join('\n')}
+      <!-- Termina bloque repetido -->
+    </records>
+  </data>
+
+  <ui>
+    <window title="Main">
+      <panel id="left">
+        <button text="Click me" onClick={handleClick} />
+        <input type="text" value={userInput} />
+      </panel>
+      <panel id="right">
+        <list>
+          {items.map(item => <listItem>{item.label}</listItem>)}
+        </list>
+      </panel>
+    </window>
+  </ui>
+    <config enabled="true" retries={3} timeout={`1000 * 60`}>
+    <settings>
+      <option name="A" value="1" />
+      <option name="B" value="2" />
+      <option name="C" value={computeValue()} />
+    </settings>
+    <paths>
+      {userPaths.map(p => <path value={p} />)}
+    </paths>
+  </config>
+
+  <data>
+    <records>
+      <record id="1">
+        <field name="name">John</field>
+        <field name="email">{getEmail(1)}</field>
+        <field name="active">true</field>
+      </record>
+      <record id="2">
+        <field name="name">Jane</field>
+        <field name="email">{getEmail(2)}</field>
+        <field name="active">false</field>
+      </record>
+      <record id="3">
+        <field name="name">Alice</field>
+        <field name="email">{getEmail(3)}</field>
+        <field name="active">true</field>
+      </record>
+      <!-- Repetimos más registros para crecer el XML -->
+      <!-- Empieza bloque repetido -->
+      ${Array.from({ length: 100 }).map((_, i) => `
+      <record id="${i + 4}">
+        <field name="name">User${i}</field>
+        <field name="email">{getEmail(${i + 4})}</field>
+        <field name="active">${i % 2 === 0}</field>
+      </record>
+      `).join('\n')}
+      <!-- Termina bloque repetido -->
+    </records>
+  </data>
+
+  <ui>
+    <window title="Main">
+      <panel id="left">
+        <button text="Click me" onClick={handleClick} />
+        <input type="text" value={userInput} />
+      </panel>
+      <panel id="right">
+        <list>
+          {items.map(item => <listItem>{item.label}</listItem>)}
+        </list>
+      </panel>
+    </window>
+  </ui>
+</root>
