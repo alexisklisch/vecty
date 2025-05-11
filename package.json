@@ -1,7 +1,7 @@
 {
   "name": "vecty",
-  "version": "0.0.18.alpha.1",
-  "description": "Add variables to SVG files.",
+  "version": "0.0.19",
+  "description": "Add variables to XML files.",
   "type": "module",
   "sideEffects": false,
   "main": "dist/cjs/main.js",
