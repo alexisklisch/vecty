@@ -18,9 +18,7 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "test": "vitest",
-    "temp": "tsx test/temp.ts",
-    "build": "tsc",
-    "build:rs": "rspack build && tsc && tsc-alias"
+    "build": "rspack build && tsc && tsc-alias"
   },
   "keywords": [],
   "author": "Alexis Fleitas Klisch",
