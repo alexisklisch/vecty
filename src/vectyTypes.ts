@@ -21,6 +21,6 @@ export interface PluginHooks {
   onFinish?: (context: PluginContext) => void
 }
 
-export interface Plugin {
-  (config?: Record<string, any>): PluginHooks
-}
+export type PluginConfig = Record<string, any>
+
+export type Plugin = (config?: PluginConfig) => PluginHooks

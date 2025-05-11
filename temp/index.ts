@@ -13,8 +13,9 @@ const vecty = new Vecty(xml, {
     name: 'John'
   },
   plugins: [
+    textReplace('la', 'le'),
+    textReplace('da', 'de'),
     testPlugin,
-    textReplace('comida', 'queso')
   ]
 })
 
