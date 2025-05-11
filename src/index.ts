@@ -3,13 +3,14 @@ import { assignInitialVars } from "@/utils/assignVariables"
 import { parser } from "@/utils/xmlParser"
 import { tagRegex } from "@/utils/tagRegex"
 import type { ExpressionNode, Node, TagNode } from "./utils/xmlParser/parserTypes"
-import type { VectyConfig } from '@/vectyTypes'
+import type { VectyConfig, PluginContext, PluginHooks } from '@/vectyTypes'
 
 class Vecty {
   public variables: Record<string, any> = {}
   #tempSource: string
   #variantList: string[] | [undefined] = []
   #currentVariant: string | undefined = undefined
+  #plugins: PluginHooks[] = []
 
   constructor(private readonly userSource: string, private config: VectyConfig = {}) {
     let sourceWithoutComments = userSource.replace(/\/\*[\s\S]*?\*\//g, '') // Elimina los comentarios
@@ -20,12 +21,38 @@ class Vecty {
     const { cleanSource, cleanVariables } = assignInitialVars(sourceWithoutComments, config, this.#currentVariant)
     this.#tempSource = cleanSource
     this.variables = cleanVariables
+
+    // Inicializar plugins
+    if (config.plugins) {
+      this.#plugins = config.plugins.map(plugin => plugin())
+      
+      // Ejecutar onInit en todos los plugins
+      const context = this.#createPluginContext()
+      this.#plugins.forEach(plugin => plugin.onInit?.(context))
+    }
+  }
+
+  #createPluginContext(): PluginContext {
+    return {
+      variables: this.variables,
+      parser: {
+        parse: parser.parse,
+        build: parser.build
+      },
+      evaluateExpression,
+      currentVariant: this.#currentVariant
+    }
   }
 
   get object() {
     this.#currentVariant = this.#variantList[0]
     const [sourceParsed] = parser.parse(this.#tempSource)
     this.#recursiveSource(sourceParsed, undefined, undefined)
+    
+    // Ejecutar onFinish en todos los plugins
+    const context = this.#createPluginContext()
+    this.#plugins.forEach(plugin => plugin.onFinish?.(context))
+    
     return [sourceParsed]
   }
 
@@ -54,7 +81,12 @@ class Vecty {
     return sources
   }
 
-  #recursiveSource(currentNode:Node, parent?: TagNode, currentPosition?: number) {
+  #recursiveSource(currentNode: Node, parent?: TagNode, currentPosition?: number) {
+    const context = this.#createPluginContext()
+    
+    // Ejecutar onNode en todos los plugins
+    this.#plugins.forEach(plugin => plugin.onNode?.(currentNode, context))
+
     if (typeof currentNode === 'object') {
       if (currentNode.type === 'tag') {
         const elementAttrs: Record<string, any> = currentNode?.attr || {}

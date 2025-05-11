@@ -16,11 +16,8 @@
     "emitDeclarationOnly": true,
     "outDir": "./dist",
     "esModuleInterop": true,
-    "strict": true,
-  },
-  "tsc-alias": {
-    "resolveFullPaths": true
+    "strict": true
   },
   "include": ["src"],
-  "exclude": ["test", "plugins"]
+  "exclude": [ "plugins"]
 }
