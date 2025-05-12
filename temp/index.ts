@@ -5,7 +5,7 @@ import replaceTag from '../plugins/tag-replacer'
 const xml = `
 <root>
   <vecty-variables content={{
-    age: 12
+    age: "12"
 }}/>
   <text>Me gusta la comida</text>
   <sound volume="high">Este es un sonido que será reemplazado</sound>

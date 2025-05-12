@@ -89,16 +89,15 @@ class Vecty {
 
     if (typeof currentNode === 'object') {
       if (currentNode.type === 'tag') {
-        const elementAttrs: Record<string, any> = currentNode?.attr || {}
+        const elementAttrs: Record<string, string | ExpressionNode> = currentNode?.attr || {}
 
         if (elementAttrs) {
           for (const [attrName, attrValue] of Object.entries(elementAttrs)) {
-            // ...evaluar en el caso de que sean expresiones
-            if (attrValue.expression) {
-              const result = evaluateExpression(attrValue.expression, this.variables, this.#currentVariant)
-              typeof result === 'object'
-                ? currentNode.attr[attrName] = JSON.stringify(JSON.stringify(result)).slice(1, -1)
-                : currentNode.attr[attrName] = String(result)
+            if (typeof attrValue === 'object' && attrValue.type === 'expr') {
+              const result = evaluateExpression(attrValue.content, this.variables, this.#currentVariant)
+              currentNode.attr[attrName] = typeof result === 'object' && result !== null
+                ? JSON.stringify(result)
+                : String(result)
             }
           }
         }
