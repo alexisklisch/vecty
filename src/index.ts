@@ -2,6 +2,7 @@ import { evaluateExpression } from "@/utils/evaluateExpression"
 import { assignInitialVars } from "@/utils/assignVariables"
 import { parser } from "@/utils/xmlParser"
 import { tagRegex } from "@/utils/tagRegex"
+import { getVariants } from "@/utils/getVariants"
 import type { ExpressionNode, Node, TagNode } from "./utils/xmlParser/parserTypes"
 import type { VectyConfig, PluginContext, PluginHooks, ExportOptions } from '@/vectyTypes'
 
@@ -129,23 +130,3 @@ class Vecty {
 }
 
 export default Vecty
-
-const getVariants = (source: string) => {
-  const variantsElementRegex = tagRegex('vecty-variants')
-  const variantsElementRaw = source.match(variantsElementRegex)
-
-  if (variantsElementRaw) {
-    const [variants] = parser.parse(variantsElementRaw![0] || '')
-    
-    if (variants.type !== 'tag') return
-    const nodeExpression = variants.attr.content as ExpressionNode
-    const expressionResolved = evaluateExpression(nodeExpression.content, {})
-
-    if (!Array.isArray(expressionResolved)) return undefined
-    const isStringArray = expressionResolved.some(variation => typeof variation === 'string')
-
-    if (isStringArray) return expressionResolved
-  }
-
-  return undefined
-}
