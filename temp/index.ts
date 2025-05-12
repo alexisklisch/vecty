@@ -6,8 +6,9 @@ const xml = `
 <root>
   <vecty-variables content={{
     age: "12"
-}}/>
-  <text>Me gusta la comida</text>
+  }}/>
+  <vecty-variants content={['variant1', 'variant2']}/>
+  <text>Me gusta la {$assign({variant1: 'milanesa', variant2: 'pizza'}, 'comida')}</text>
   <sound volume="high">Este es un sonido que será reemplazado</sound>
   <text edad={template.age}>La comida es deliciosa a los {template.age} años</text>
   <p>Atención esto {{type: 'tag', tag: 'error', attr: {}, child: [{type: 'text', content: 'es un error '}, {type: 'expr', content: 'template.age'}]}} es un error</p>
@@ -25,4 +26,4 @@ const vecty = new Vecty(xml, {
   ]
 })
 console.log(JSON.stringify(vecty.export({mode: 'object'}), null, 2))
-console.log(vecty.export({mode: 'xml'}))
+console.log(vecty.export({mode: 'xml', variant: 'variant3'}))
