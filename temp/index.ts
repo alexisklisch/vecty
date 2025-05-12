@@ -21,9 +21,8 @@ const vecty = new Vecty(xml, {
   plugins: [
     textReplace('la', 'le'),
     textReplace('da', 'de'),
-    testPlugin,
     replaceTag([{tag: 'sound', msg: 'No se permite sonido en XML'}])
   ]
 })
-console.log(JSON.stringify(vecty.object, null, 2))
-console.log(vecty.source)
+console.log(JSON.stringify(vecty.export({mode: 'object'}), null, 2))
+console.log(vecty.export({mode: 'xml'}))

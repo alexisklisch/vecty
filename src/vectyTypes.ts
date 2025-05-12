@@ -5,6 +5,11 @@ export interface VectyConfig {
   plugins?: Plugin[]
 }
 
+export interface ExportOptions {
+  mode?: 'object' | 'xml'
+  variant?: string[] | string | (string | undefined)[]
+}
+
 export interface PluginContext {
   variables: Record<string, any>
   parser: {

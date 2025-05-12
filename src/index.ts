@@ -3,12 +3,12 @@ import { assignInitialVars } from "@/utils/assignVariables"
 import { parser } from "@/utils/xmlParser"
 import { tagRegex } from "@/utils/tagRegex"
 import type { ExpressionNode, Node, TagNode } from "./utils/xmlParser/parserTypes"
-import type { VectyConfig, PluginContext, PluginHooks } from '@/vectyTypes'
+import type { VectyConfig, PluginContext, PluginHooks, ExportOptions } from '@/vectyTypes'
 
 class Vecty {
   public variables: Record<string, any> = {}
   #tempSource: string
-  #variantList: string[] | [undefined] = []
+  #variantList: (string | undefined)[] = []
   #currentVariant: string | undefined = undefined
   #plugins: PluginHooks[] = []
 
@@ -44,41 +44,37 @@ class Vecty {
     }
   }
 
-  get object() {
-    this.#currentVariant = this.#variantList[0]
-    const [sourceParsed] = parser.parse(this.#tempSource)
-    this.#recursiveSource(sourceParsed, undefined, undefined)
+  export(options: ExportOptions = {}) {
+    const mode = options.mode || 'xml';
+    let variants: (string | undefined)[] = [];
     
-    // Ejecutar onFinish en todos los plugins
-    const context = this.#createPluginContext()
-    this.#plugins.forEach(plugin => plugin.onFinish?.(context))
+    // Determinar las variantes a procesar
+    if (options.variant === undefined) {
+      // Por defecto, usa la primera variante
+      variants = [this.#variantList[0]];
+    } else if (typeof options.variant === 'string') {
+      // Una sola variante
+      variants = [options.variant];
+    } else {
+      // Array de variantes
+      variants = options.variant as string[];
+    }
     
-    return [sourceParsed]
-  }
-
-  objects() {
-    const objects = []
-    for (const variant of this.#variantList) {
-      this.#currentVariant = variant
-
-      const [sourceParsed] = parser.parse(this.#tempSource)
-      this.#recursiveSource(sourceParsed, undefined, undefined)
-
-      objects.push(sourceParsed)
-    }
-    return objects
-  }
-
-  get source() { return parser.build(this.object) }
-
-  sources() {
-    const objects = this.objects()
-    const sources = []
-    for (const object of objects) {
-      const source = parser.build([object])
-      sources.push(source)
-    }
-    return sources
+    // Procesar cada variante
+    const results = variants.map(variant => {
+      this.#currentVariant = variant;
+      const [sourceParsed] = parser.parse(this.#tempSource);
+      this.#recursiveSource(sourceParsed, undefined, undefined);
+      
+      // Ejecutar onFinish en todos los plugins
+      const context = this.#createPluginContext();
+      this.#plugins.forEach(plugin => plugin.onFinish?.(context));
+      
+      return mode === 'object' ? sourceParsed : parser.build([sourceParsed]);
+    });
+    
+    // Si solo hay una variante, devuelve el resultado directamente
+    return variants.length === 1 ? results[0] : results;
   }
 
   #recursiveSource(currentNode: Node, parent?: TagNode, currentPosition?: number) {

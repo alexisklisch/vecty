@@ -1,6 +1,6 @@
 {
   "name": "vecty",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "Add variables to XML files.",
   "type": "module",
   "sideEffects": false,
