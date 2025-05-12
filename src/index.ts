@@ -112,10 +112,18 @@ class Vecty {
 
       if (currentNode.type === 'expr') {
         const expressionResult = evaluateExpression(currentNode.content, this.variables, this.#currentVariant)
-        if (typeof expressionResult === 'string') {
-          parent!.child[currentPosition!] = { type: 'text', content: expressionResult }
-        } else {
+        
+        // Si es un primitivo o un array, convertirlo a nodo de texto
+        if (typeof expressionResult !== 'object' || expressionResult === null || Array.isArray(expressionResult)) {
+          parent!.child[currentPosition!] = { type: 'text', content: String(expressionResult) }
+        } 
+        // Si es un objeto que ya tiene la estructura de un nodo (con la propiedad 'type')
+        else if (expressionResult && typeof expressionResult === 'object' && 'type' in expressionResult) {
           parent!.child[currentPosition!] = expressionResult
+        }
+        // Para cualquier otro objeto, convertirlo a texto
+        else {
+          parent!.child[currentPosition!] = { type: 'text', content: JSON.stringify(expressionResult) }
         }
 
         this.#recursiveSource(parent!.child[currentPosition!], parent, currentPosition)

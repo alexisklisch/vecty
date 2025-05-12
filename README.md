@@ -27,6 +27,7 @@
 - [Testing](#testing)
 - [Contributing](#contributing)
 - [License](#license)
+- [Plugin: Tag Replacer](#plugin-tag-replacer)
 
 ---
 
@@ -236,3 +237,58 @@ Run:
 ```bash
 npm run test
 ```
+
+## Plugin: Tag Replacer
+
+Este plugin permite reemplazar etiquetas específicas y su contenido con una etiqueta de advertencia (`<warn>`) que contiene un mensaje personalizado.
+
+### Uso
+
+```typescript
+import Vecty from 'vecty'
+import replaceTag from 'vecty/plugins/tag-replacer'
+
+// Configuración de las etiquetas a reemplazar
+const tagReplacements = [
+  { tag: 'sound', msg: 'No se permite sonido en XML' },
+  { tag: 'animation', msg: 'Solo se permiten archivos estáticos' }
+];
+
+// Crear instancia de Vecty con el plugin
+const vecty = new Vecty(xmlContent, {
+  plugins: [
+    replaceTag(tagReplacements)
+  ]
+});
+
+// Obtener el resultado procesado
+const result = vecty.source;
+```
+
+### Ejemplo
+
+Para un XML de entrada como:
+
+```xml
+<root>
+  <title>Documento de ejemplo</title>
+  <content>
+    <sound volume="high">Este es un sonido</sound>
+    <animation type="gif">Esta es una animación</animation>
+  </content>
+</root>
+```
+
+El resultado será:
+
+```xml
+<root>
+  <title>Documento de ejemplo</title>
+  <content>
+    <warn>No se permite sonido en XML</warn>
+    <warn>Solo se permiten archivos estáticos</warn>
+  </content>
+</root>
+```
+
+Cada etiqueta especificada en la configuración será reemplazada por una etiqueta `<warn>` con el mensaje correspondiente, eliminando todos los atributos originales.
